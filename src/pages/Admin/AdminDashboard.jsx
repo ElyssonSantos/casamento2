@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStats } from '../../services/rsvpService';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Download, LogOut, CheckCircle } from 'lucide-react';
 import './Admin.css';
@@ -36,43 +36,48 @@ const AdminDashboard = () => {
     };
 
     const exportPDF = () => {
-        const doc = new jsPDF();
+        try {
+            const doc = new jsPDF();
 
-        // Header
-        doc.setFontSize(22);
-        doc.setTextColor(197, 160, 89);
-        doc.text('Confirmados - Gabriel & Larissa', 20, 20);
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(197, 160, 89);
+            doc.text('Confirmados - Gabriel & Larissa', 20, 20);
 
-        doc.setFontSize(12);
-        doc.setTextColor(100);
-        doc.text(`Total de Confirmados: ${stats.total}`, 20, 30);
-        doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, 20, 36);
+            doc.setFontSize(12);
+            doc.setTextColor(100);
+            doc.text(`Total de Confirmados: ${stats.total}`, 20, 30);
+            doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, 20, 36);
 
-        // Table
-        const tableColumn = ["#", "Nome", "CPF", "Telefone", "Doação", "Data de Conf. "];
-        const tableRows = [];
+            // Table
+            const tableColumn = ["#", "Nome", "CPF", "Telefone", "Doação", "Data de Conf. "];
+            const tableRows = [];
 
-        stats.list.forEach((confirmacao, index) => {
-            const confirmData = [
-                index + 1,
-                confirmacao.name,
-                confirmacao.cpf,
-                confirmacao.phone,
-                confirmacao.donation ? `R$ ${confirmacao.donation.amount}` : "Não registrada",
-                new Date(confirmacao.date).toLocaleString()
-            ];
-            tableRows.push(confirmData);
-        });
+            stats.list.forEach((confirmacao, index) => {
+                const confirmData = [
+                    index + 1,
+                    confirmacao.name,
+                    confirmacao.cpf,
+                    confirmacao.phone,
+                    confirmacao.donation ? `R$ ${confirmacao.donation.amount}` : "Não registrada",
+                    new Date(confirmacao.date).toLocaleString()
+                ];
+                tableRows.push(confirmData);
+            });
 
-        autoTable(doc, {
-            head: [tableColumn],
-            body: tableRows,
-            startY: 45,
-            theme: 'grid',
-            headStyles: { fillColor: [94, 125, 99] }, // Green
-        });
+            autoTable(doc, {
+                head: [tableColumn],
+                body: tableRows,
+                startY: 45,
+                theme: 'grid',
+                headStyles: { fillColor: [94, 125, 99] }, // Green
+            });
 
-        doc.save('lista-confirmados.pdf');
+            doc.save('lista-confirmados.pdf');
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao exportar PDF: " + error.message);
+        }
     };
 
     return (
