@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/rsvps';
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_URL = import.meta.env.VITE_API_URL || (isLocalhost ? 'http://localhost:3001/api/rsvps' : '/api/rsvps');
 const RSVP_KEY = 'casamento_rsvps';
 
 const migrateLocalData = async () => {
