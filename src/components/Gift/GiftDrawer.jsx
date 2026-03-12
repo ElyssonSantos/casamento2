@@ -196,7 +196,7 @@ const GiftDrawer = ({ isOpen, onClose }) => {
                         <>
                             <p className="gift-intro">
                                 Criamos este espaço para quem desejar nos presentear de forma prática. <br />
-                                Fique à vontade — sua presença é o que mais importa para nós. 💛
+                                Fiquem à vontade — sua presença é o que mais importa para nós. 💛
                             </p>
 
                             <div className="gift-options">

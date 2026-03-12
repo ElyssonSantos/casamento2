@@ -47,7 +47,7 @@ const AdminDashboard = () => {
             doc.setFontSize(12);
             doc.setTextColor(100);
             doc.text(`Total de Confirmados: ${stats.total}`, 20, 30);
-            doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, 20, 36);
+            doc.text(`Atualizado em: ${new Date().toLocaleDateString()}`, 20, 36);
 
             // Table
             const tableColumn = ["#", "Nome", "CPF", "Telefone", "Doação", "Data de Conf. "];
