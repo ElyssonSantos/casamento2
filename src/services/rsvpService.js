@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3001/api/rsvps';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/rsvps';
 const RSVP_KEY = 'casamento_rsvps';
 
 const migrateLocalData = async () => {
@@ -75,7 +75,8 @@ export const getStats = async () => {
 };
 
 export const registerDonation = async (formData) => {
-    const response = await fetch('http://localhost:3001/api/donations', {
+    const DONATION_URL = API_URL.replace('/rsvps', '/donations');
+    const response = await fetch(DONATION_URL, {
         method: 'POST',
         // Note: Do not stringify FormData, fetch does it automatically and sets the boundary header
         body: formData,

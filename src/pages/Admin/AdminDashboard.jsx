@@ -123,7 +123,7 @@ const AdminDashboard = () => {
                                             {item.donation ? (
                                                 <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                                     <span style={{color: 'green', fontWeight: 'bold'}}>R$ {item.donation.amount}</span>
-                                                    <a href={`http://localhost:3001${item.donation.receiptUrl}`} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.8rem', color: '#5e7d63', textDecoration: 'underline'}}>Ver Comprovante</a>
+                                                    <a href={import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/rsvps', '') + item.donation.receiptUrl : `http://localhost:3001${item.donation.receiptUrl}`} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.8rem', color: '#5e7d63', textDecoration: 'underline'}}>Ver Comprovante</a>
                                                 </div>
                                             ) : (
                                                 <span style={{color: '#999'}}>Não registrada</span>
