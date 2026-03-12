@@ -1,0 +1,28 @@
+:root {
+  --color-gold: #C5A059;
+  --color-green: #5E7D63;
+  --color-text: #2c3e50;
+  --color-background: #fdfdfd;
+  --color-white: #ffffff;
+  --color-off-white: #f9f9f9;
+  --color-error: #e74c3c;
+  --color-success: #2ecc71;
+
+  --font-title: 'Great Vibes', cursive;
+  --font-body: 'Bree Serif', serif;
+
+  --transition-fast: 0.3s ease;
+  --transition-medium: 0.5s ease;
+  --transition-slow: 0.8s ease;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
+  --spacing-xxl: 128px;
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
+}

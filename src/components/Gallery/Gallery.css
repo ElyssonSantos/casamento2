@@ -1,0 +1,103 @@
+.gallery {
+    background-color: #f9f9f9;
+    overflow: hidden;
+}
+
+.gallery h2 {
+    color: var(--color-gold);
+    margin-bottom: 2rem;
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+}
+
+/* CAROUSEL MODE FOR MOBILE */
+.gallery-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 0.5rem 1rem 2rem 1rem;
+    /* Padding for shadow */
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.gallery-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.gallery-card {
+    flex: 0 0 85vw;
+    /* 85% of viewport width */
+    max-width: 400px;
+    aspect-ratio: 3/4;
+    /* Consistent portrait ratio */
+    scroll-snap-align: center;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    background-color: #eee;
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Fallback/Error State */
+.gallery-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.fallback-icon {
+    font-size: 3rem;
+    opacity: 0.5;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+}
+
+@media (min-width: 768px) {
+    .gallery-scroll-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        overflow-x: visible;
+        scroll-snap-type: none;
+        justify-content: center;
+    }
+
+    .gallery-card {
+        flex: unset;
+        width: 100%;
+        max-width: unset;
+        aspect-ratio: 3/4;
+    }
+}

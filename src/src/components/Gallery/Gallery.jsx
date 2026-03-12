@@ -1,0 +1,55 @@
+import React, { useState } from 'react';
+import './Gallery.css';
+
+import imgHands from '../../assets/wedding_hands_rings.png';
+import imgWalking from '../../assets/wedding_couple_walking.png';
+import imgSunset from '../../assets/wedding_couple_sunset.png';
+import imgDecor from '../../assets/wedding_details_decor.png';
+
+const images = [
+    { src: imgHands, alt: "Mãos e alianças" },
+    { src: imgWalking, alt: "Caminhando juntos" },
+    { src: imgSunset, alt: "Pôr do sol" },
+    { src: imgDecor, alt: "Detalhes da decoração" },
+    // Only using local reliable images now to prevent loading issues
+];
+
+const Gallery = () => {
+    // State to track error images to switch UI
+    const [failedImages, setFailedImages] = useState({});
+
+    const handleImageError = (index) => {
+        setFailedImages(prev => ({ ...prev, [index]: true }));
+    };
+
+    return (
+        <section className="gallery section-padding" id="galeria">
+            <div className="container">
+                <h2 className="section-title text-center">Momentos Felizes</h2>
+
+                <div className="gallery-scroll-container">
+                    {images.map((img, index) => (
+                        <div key={index} className="gallery-card">
+                            {failedImages[index] ? (
+                                <div className="gallery-fallback">
+                                    <span className="fallback-icon">❤️</span>
+                                </div>
+                            ) : (
+                                <img
+                                    src={img.src}
+                                    alt={img.alt}
+                                    loading="lazy"
+                                    onError={() => handleImageError(index)}
+                                    // Ensure it doesn't wait for desktop events
+                                    draggable="false"
+                                />
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default Gallery;
