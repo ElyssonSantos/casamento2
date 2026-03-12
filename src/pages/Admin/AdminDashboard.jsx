@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStats } from '../../services/rsvpService';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { Download, LogOut, CheckCircle } from 'lucide-react';
 import './Admin.css';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({ total: 0, list: [] });
+    const [selectedImage, setSelectedImage] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,7 +64,7 @@ const AdminDashboard = () => {
             tableRows.push(confirmData);
         });
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             startY: 45,
@@ -123,7 +124,7 @@ const AdminDashboard = () => {
                                             {item.donation ? (
                                                 <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                                     <span style={{color: 'green', fontWeight: 'bold'}}>R$ {item.donation.amount}</span>
-                                                    <a href={typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? `http://localhost:3001${item.donation.receiptUrl}` : item.donation.receiptUrl} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.8rem', color: '#5e7d63', textDecoration: 'underline'}}>Ver Comprovante</a>
+                                                    <button onClick={() => setSelectedImage(item.donation.receiptUrl.startsWith('data:image') ? item.donation.receiptUrl : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/rsvps', '') + item.donation.receiptUrl : `http://localhost:3001${item.donation.receiptUrl}`))} style={{fontSize: '0.8rem', color: '#5e7d63', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>Ver Comprovante</button>
                                                 </div>
                                             ) : (
                                                 <span style={{color: '#999'}}>Não registrada</span>
@@ -141,6 +142,14 @@ const AdminDashboard = () => {
                     </table>
                 </div>
             </div>
+        {selectedImage && (
+            <div className="modal-overlay" onClick={() => setSelectedImage(null)} style={{zIndex: 9999}}>
+                <div className="modal-content" onClick={e => e.stopPropagation()} style={{padding: '30px 10px 10px', textAlign: 'center', position: 'relative', width: 'auto', maxWidth: '90%'}}>
+                    <button onClick={() => setSelectedImage(null)} style={{position: 'absolute', top: '10px', right: '15px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#333'}}>×</button>
+                    <img src={selectedImage} alt="Comprovante" style={{maxWidth: '100%', maxHeight: '80vh', borderRadius: '8px'}} />
+                </div>
+            </div>
+        )}
         </div>
     );
 };

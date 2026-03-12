@@ -8,24 +8,31 @@ const migrateLocalData = async () => {
         if (localData) {
             const parsedData = JSON.parse(localData);
             if (Array.isArray(parsedData) && parsedData.length > 0) {
+                let allSuccess = true;
                 for (const item of parsedData) {
                     try {
                         const duplicateCheck = await fetch(API_URL);
                         const duplicateData = await duplicateCheck.json();
                         const exists = duplicateData.list.some(rsvp => rsvp.cpf === item.cpf || rsvp.phone === item.phone);
                         if (!exists) {
-                            await fetch(API_URL, {
+                            const postReq = await fetch(API_URL, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(item),
                             });
+                            if (!postReq.ok) allSuccess = false;
                         }
                     } catch (e) {
                         console.error('Erro ao migrar item:', e);
+                        allSuccess = false;
                     }
                 }
+                if (allSuccess) {
+                    localStorage.removeItem(RSVP_KEY);
+                }
+            } else {
+                localStorage.removeItem(RSVP_KEY);
             }
-            localStorage.removeItem(RSVP_KEY);
         }
     } catch (error) {
         console.error('Falha na migração:', error);
@@ -79,8 +86,8 @@ export const registerDonation = async (formData) => {
     const DONATION_URL = API_URL.replace('/rsvps', '/donations');
     const response = await fetch(DONATION_URL, {
         method: 'POST',
-        // Note: Do not stringify FormData, fetch does it automatically and sets the boundary header
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
     });
 
     if (!response.ok) {

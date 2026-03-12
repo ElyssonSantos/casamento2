@@ -121,12 +121,11 @@ app.delete('/api/rsvps', async (req, res) => {
     }
 });
 
-app.post('/api/donations', upload.single('receipt'), async (req, res) => {
+app.post('/api/donations', async (req, res) => {
     try {
-        const { cpf, amount } = req.body;
-        const file = req.file;
+        const { cpf, amount, receipt } = req.body;
 
-        if (!cpf || !amount || !file) {
+        if (!cpf || !amount || !receipt) {
             return res.status(400).json({ error: 'CPF, valor e comprovante são obrigatórios' });
         }
 
@@ -139,7 +138,7 @@ app.post('/api/donations', upload.single('receipt'), async (req, res) => {
 
         currentRSVPs[rsvpIndex].donation = {
             amount: amount,
-            receiptUrl: '/uploads/' + file.filename,
+            receiptUrl: receipt,
             date: new Date().toISOString()
         };
 

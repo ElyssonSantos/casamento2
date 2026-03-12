@@ -53,6 +53,36 @@ const GiftDrawer = ({ isOpen, onClose }) => {
         }
     };
 
+
+    const compressImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Resolução suficiente para comprovantes
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height = Math.round((height * MAX_WIDTH) / width);
+                        width = MAX_WIDTH;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Boa compressão
+                    resolve(dataUrl);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleDonationSubmit = async (e) => {
         e.preventDefault();
         if (!formData.cpf || !formData.amount || !formData.receipt) return;
@@ -60,13 +90,16 @@ const GiftDrawer = ({ isOpen, onClose }) => {
         setStatus('loading');
         setErrorMessage('');
 
-        const data = new FormData();
-        data.append('cpf', formData.cpf);
-        data.append('amount', formData.amount);
-        data.append('receipt', formData.receipt);
-
         try {
-            await registerDonation(data);
+            const base64Image = await compressImage(formData.receipt);
+            
+            const payload = {
+                cpf: formData.cpf,
+                amount: formData.amount,
+                receipt: base64Image
+            };
+
+            await registerDonation(payload);
             setStatus('success');
             setTimeout(() => {
                 resetForm();
