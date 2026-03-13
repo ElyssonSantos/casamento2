@@ -1,4 +1,6 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Gift } from 'lucide-react';
 
 const GiftSection = () => {
     const navigate = useNavigate();
