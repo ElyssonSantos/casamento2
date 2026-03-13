@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { createClient } from '@vercel/kv';
+import Redis from 'ioredis';
 import multer from 'multer';
 
 const app = express();
@@ -23,33 +24,44 @@ const upload = multer({ storage });
 
 const RSVP_KV_KEY = 'rsvps_list';
 
-// 🔍 BUSCA FLEXÍVEL DE VARIÁVEIS
-const kvUrl = process.env.KV_REST_API_URL || process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_URL;
-const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+// 🔍 CONFIGURAÇÃO FLEXÍVEL DE BANCO
+const kvRestUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const kvRestToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const redisTcpUrl = process.env.REDIS_URL || process.env.KV_URL;
 
-// Inicializa o cliente manualmente para não depender dos nomes padrão da Vercel
-const kv = (kvUrl && kvToken) ? createClient({
-    url: kvUrl,
-    token: kvToken,
-}) : null;
+let dbClient = null;
+let dbType = '';
+
+if (kvRestUrl && kvRestToken) {
+    dbClient = createClient({ url: kvRestUrl, token: kvRestToken });
+    dbType = 'kv';
+    console.log('Usando Vercel KV (REST)');
+} else if (redisTcpUrl) {
+    dbClient = new Redis(redisTcpUrl);
+    dbType = 'redis';
+    console.log('Usando Redis Tradicional (TCP)');
+}
 
 const getRSVPs = async () => {
-    if (!kv) {
-        console.error('ERRO: Banco de dados não inicializado. Verifique se o Upstash/Redis está conectado.');
-        throw new Error('Banco de dados não configurado. Certifique-se de ter conectado o Upstash no painel da Vercel.');
+    if (!dbClient) {
+        throw new Error('Banco de dados não configurado. Por favor, conecte o Redis ou KV no painel da Vercel.');
     }
     try {
-        const data = await kv.get(RSVP_KV_KEY);
-        return data || [];
+        const data = await dbClient.get(RSVP_KV_KEY);
+        if (!data) return [];
+        // Redis retorna string, KV já retorna objeto
+        return typeof data === 'string' ? JSON.parse(data) : data;
     } catch (error) {
-        console.error('Error reading from KV:', error);
+        console.error('Erro na leitura do banco:', error);
         throw error;
     }
 };
 
 const saveRSVPsStore = async (rsvps) => {
-    if (!kv) throw new Error('KV não inicializado');
-    await kv.set(RSVP_KV_KEY, rsvps);
+    if (!dbClient) throw new Error('Cliente DB não inicializado');
+    // Redis exige string, KV aceita objeto
+    const value = dbType === 'redis' ? JSON.stringify(rsvps) : rsvps;
+    await dbClient.set(RSVP_KV_KEY, value);
 };
 
 app.get('/api/rsvps', async (req, res) => {
