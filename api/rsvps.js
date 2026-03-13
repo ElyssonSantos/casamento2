@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { kv } from '@vercel/kv';
+import { createClient } from '@vercel/kv';
 import multer from 'multer';
 
 const app = express();
@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const UPLOADS_DIR = '/tmp'; // Vercel only allows writing to /tmp
+const UPLOADS_DIR = '/tmp'; 
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -23,16 +23,20 @@ const upload = multer({ storage });
 
 const RSVP_KV_KEY = 'rsvps_list';
 
-// Tenta encontrar as variáveis mesmo se os nomes forem diferentes (Redis/Upstash/KV)
+// 🔍 BUSCA FLEXÍVEL DE VARIÁVEIS
 const kvUrl = process.env.KV_REST_API_URL || process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_URL;
 const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
+// Inicializa o cliente manualmente para não depender dos nomes padrão da Vercel
+const kv = (kvUrl && kvToken) ? createClient({
+    url: kvUrl,
+    token: kvToken,
+}) : null;
+
 const getRSVPs = async () => {
-    // Se tivermos a REDIS_URL mas não o Token, avisamos o log mas tentamos prosseguir
-    if (!kvUrl) {
-        console.error('ERRO: Nenhuma URL de banco de dados (KV_URL ou REDIS_URL) encontrada.');
-        console.log('Variáveis disponíveis:', Object.keys(process.env).filter(k => k.includes('REDIS') || k.includes('KV')));
-        throw new Error('Configuração de banco de dados incompleta no painel da Vercel.');
+    if (!kv) {
+        console.error('ERRO: Banco de dados não inicializado. Verifique se o Upstash/Redis está conectado.');
+        throw new Error('Banco de dados não configurado. Certifique-se de ter conectado o Upstash no painel da Vercel.');
     }
     try {
         const data = await kv.get(RSVP_KV_KEY);
@@ -44,6 +48,7 @@ const getRSVPs = async () => {
 };
 
 const saveRSVPsStore = async (rsvps) => {
+    if (!kv) throw new Error('KV não inicializado');
     await kv.set(RSVP_KV_KEY, rsvps);
 };
 
