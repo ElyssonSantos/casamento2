@@ -71,7 +71,8 @@ app.get('/api/rsvps', async (req, res) => {
         const rsvps = await getRSVPs();
         res.json({ total: rsvps.length, list: rsvps });
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar RSVPs' });
+        console.error('Erro na API GET /rsvps:', error);
+        res.status(500).json({ error: 'Erro ao buscar: ' + (error.message || 'Erro interno') });
     }
 });
 
