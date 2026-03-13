@@ -11,6 +11,8 @@ import GiftDrawer from '../components/Gift/GiftDrawer';
 import GiftSection from '../components/Gift/GiftSection';
 import Countdown from '../components/Countdown/Countdown';
 
+import { Play, Pause, Volume2, VolumeX, Plus, Minus } from 'lucide-react';
+
 import '../styles/global.css';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
@@ -19,6 +21,10 @@ function LandingPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGiftDrawerOpen, setIsGiftDrawerOpen] = useState(false);
     const [showFloatingBtn, setShowFloatingBtn] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [volume, setVolume] = useState(0.3);
+    const [isMuted, setIsMuted] = useState(false);
+    const [showVolumeControls, setShowVolumeControls] = useState(false);
 
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
@@ -90,11 +96,36 @@ function LandingPage() {
         document.addEventListener("click", startAudio);
         document.addEventListener("touchstart", startAudio);
 
+        // Update local state when audio starts/stops
+        audio.onplay = () => setIsPlaying(true);
+        audio.onpause = () => setIsPlaying(false);
+
         return () => {
             document.removeEventListener("click", startAudio);
             document.removeEventListener("touchstart", startAudio);
         };
     }, [isLoading]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (audio) {
+            audio.volume = isMuted ? 0 : volume;
+            audio.muted = isMuted;
+        }
+    }, [volume, isMuted]);
+
+    const togglePlay = () => {
+        const audio = audioRef.current;
+        if (audio.paused) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    };
+
+    const increaseVolume = () => setVolume(prev => Math.min(prev + 0.1, 1));
+    const decreaseVolume = () => setVolume(prev => Math.max(prev - 0.1, 0));
+    const toggleMute = () => setIsMuted(!isMuted);
 
     // Swipe Handler
     const minSwipeDistance = 50;
@@ -176,6 +207,24 @@ function LandingPage() {
             <GiftDrawer isOpen={isGiftDrawerOpen} onClose={closeGiftDrawer} />
 
             <div className="floating-buttons-container">
+                {/* Audio Controls */}
+                <div className={`audio-floating-controls ${showFloatingBtn ? 'visible' : ''}`}>
+                    <button className="audio-main-btn" onClick={togglePlay}>
+                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                    </button>
+                    
+                    <div className="volume-group">
+                        <button className="audio-sub-btn" onClick={toggleMute}>
+                            {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                        </button>
+                        <div className="volume-sliders">
+                            <button className="vol-step" onClick={decreaseVolume}><Minus size={14} /></button>
+                            <span className="vol-pct">{Math.round(volume * 100)}%</span>
+                            <button className="vol-step" onClick={increaseVolume}><Plus size={14} /></button>
+                        </div>
+                    </div>
+                </div>
+
                 <button
                     className={`btn-gift-floating ${showFloatingBtn ? 'visible' : ''}`}
                     onClick={openGiftDrawer}
@@ -217,6 +266,93 @@ function LandingPage() {
                 .floating-rsvp:hover {
                     transform: translateY(-5px);
                     background-color: #d4ac61;
+                }
+
+                .audio-floating-controls {
+                    position: fixed;
+                    bottom: 30px;
+                    left: 30px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    z-index: 100;
+                    transform: translateY(100px);
+                    opacity: 0;
+                    transition: all 0.4s ease;
+                    background: rgba(255, 255, 255, 0.9);
+                    padding: 8px 15px;
+                    border-radius: 50px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                    backdrop-filter: blur(5px);
+                    border: 1px solid rgba(197, 160, 89, 0.3);
+                }
+                .audio-floating-controls.visible {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                .audio-main-btn {
+                    background: var(--color-green);
+                    color: white;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s ease;
+                }
+                .audio-main-btn:hover {
+                    transform: scale(1.1);
+                    filter: brightness(1.1);
+                }
+                .volume-group {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    border-left: 1px solid #eee;
+                    padding-left: 10px;
+                }
+                .audio-sub-btn {
+                    background: none;
+                    color: var(--color-green);
+                    padding: 5px;
+                    display: flex;
+                    align-items: center;
+                }
+                .volume-sliders {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    background: #f5f5f5;
+                    padding: 2px 8px;
+                    border-radius: 20px;
+                }
+                .vol-step {
+                    background: none;
+                    color: #666;
+                    display: flex;
+                    align-items: center;
+                    padding: 2px;
+                }
+                .vol-step:hover {
+                    color: var(--color-green);
+                }
+                .vol-pct {
+                    font-size: 11px;
+                    min-width: 30px;
+                    text-align: center;
+                    font-family: var(--font-body);
+                    color: #444;
+                }
+
+                @media (max-width: 600px) {
+                    .audio-floating-controls {
+                        left: 20px;
+                        bottom: 90px;
+                    }
+                    .volume-sliders {
+                        display: none;
+                    }
                 }
             `}</style>
 

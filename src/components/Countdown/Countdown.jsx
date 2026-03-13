@@ -39,15 +39,12 @@ const Countdown = () => {
     }, []);
 
     const FlipUnit = ({ value, label }) => {
-        // Formata para 2 dígitos se menor que 10
         const displayValue = value < 10 && label !== 'Dias' ? `0${value}` : value;
         
         return (
             <div className="flip-unit">
-                <div className="flip-card" key={displayValue}>
-                    <div className="flip-card-top">{displayValue}</div>
-                    <div className="flip-card-bottom">{displayValue}</div>
-                    <div className="flip-card-line"></div>
+                <div className="flip-card">
+                    <div className="flip-number">{displayValue}</div>
                 </div>
                 <span className="flip-label">{label}</span>
             </div>
