@@ -53,12 +53,14 @@ initDataStore();
 const getRSVPs = async () => {
     try {
         const data = await fs.readFile(DATA_FILE, 'utf8');
+        if (!data || data.trim() === '') return [];
         return JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
             return [];
         }
-        throw error;
+        console.error('Erro ao ler rsvps.json:', error);
+        return [];
     }
 };
 
@@ -108,7 +110,8 @@ app.post('/api/rsvps', async (req, res) => {
 
         res.status(201).json(newRSVP);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao salvar RSVP' });
+        console.error('ERRO CRÍTICO AO SALVAR RSVP:', error);
+        res.status(500).json({ error: 'Erro interno ao salvar: ' + (error.message || 'Erro desconhecido') });
     }
 });
 

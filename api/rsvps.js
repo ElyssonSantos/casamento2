@@ -79,7 +79,8 @@ app.post('/api/rsvps', async (req, res) => {
 
         res.status(201).json(newRSVP);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao salvar RSVP' });
+        console.error('ERRO CRÍTICO AO SALVAR RSVP (API):', error);
+        res.status(500).json({ error: 'Erro ao salvar: ' + (error.message || 'Erro interno') });
     }
 });
 

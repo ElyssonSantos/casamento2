@@ -199,9 +199,7 @@ function LandingPage() {
                 <GiftSection />
             </div>
 
-            <div className="reveal">
-                <Social />
-            </div>
+            <Social />
 
             <RSVPModal isOpen={isModalOpen} onClose={closeModal} />
 

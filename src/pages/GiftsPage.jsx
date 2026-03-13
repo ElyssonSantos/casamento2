@@ -4,6 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import GiftContent from '../components/Gift/GiftContent';
 import '../components/Gift/Gift.css';
 
+import Social from '../components/Social/Social';
+
 const GiftsPage = () => {
     const navigate = useNavigate();
 
@@ -25,6 +27,8 @@ const GiftsPage = () => {
                     <GiftContent />
                 </div>
             </main>
+
+            <Social />
 
             <style>{`
                 .gifts-page {
