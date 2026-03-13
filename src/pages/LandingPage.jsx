@@ -15,8 +15,11 @@ import { Play, Pause, Volume2, VolumeX, Plus, Minus } from 'lucide-react';
 
 import '../styles/global.css';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function LandingPage() {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGiftDrawerOpen, setIsGiftDrawerOpen] = useState(false);
@@ -67,6 +70,15 @@ function LandingPage() {
 
         return () => window.removeEventListener('scroll', handleScroll);
     }, [isLoading]);
+
+    // 🎁 AUTO OPEN GIFTS FROM URL
+    useEffect(() => {
+        if (!isLoading && location.pathname === '/gifts') {
+            setIsGiftDrawerOpen(true);
+            // Opcional: Limpar a URL após abrir para não reabrir ao atualizar
+            // navigate('/', { replace: true });
+        }
+    }, [isLoading, location.pathname]);
 
     // 🎵 MÚSICA DEFINITIVA (APÓS LOADING)
     useEffect(() => {
