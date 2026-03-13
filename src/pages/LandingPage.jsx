@@ -7,7 +7,6 @@ import PhrasesCarousel from '../components/PhrasesCarousel/PhrasesCarousel';
 import Gallery from '../components/Gallery/Gallery';
 import Social from '../components/Social/Social';
 import RSVPModal from '../components/RSVPModal/RSVPModal';
-import GiftDrawer from '../components/Gift/GiftDrawer';
 import GiftSection from '../components/Gift/GiftSection';
 import Countdown from '../components/Countdown/Countdown';
 
@@ -22,7 +21,6 @@ function LandingPage() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isGiftDrawerOpen, setIsGiftDrawerOpen] = useState(false);
     const [showFloatingBtn, setShowFloatingBtn] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.3);
@@ -37,9 +35,6 @@ function LandingPage() {
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
-
-    const openGiftDrawer = () => setIsGiftDrawerOpen(true);
-    const closeGiftDrawer = () => setIsGiftDrawerOpen(false);
 
     // Scroll Animation Observer
     useEffect(() => {
@@ -71,14 +66,7 @@ function LandingPage() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [isLoading]);
 
-    // 🎁 AUTO OPEN GIFTS FROM URL
-    useEffect(() => {
-        if (!isLoading && location.pathname === '/gifts') {
-            setIsGiftDrawerOpen(true);
-            // Opcional: Limpar a URL após abrir para não reabrir ao atualizar
-            // navigate('/', { replace: true });
-        }
-    }, [isLoading, location.pathname]);
+    // Scroll Animation Observer (Removida a auto-abertura pois agora é uma página própria)
 
     // 🎵 MÚSICA DEFINITIVA (APÓS LOADING)
     useEffect(() => {
@@ -157,8 +145,8 @@ function LandingPage() {
         const distance = touchStart - touchEnd;
         const isLeftSwipe = distance > minSwipeDistance;
 
-        if (isLeftSwipe && !isGiftDrawerOpen && !isModalOpen) {
-            openGiftDrawer();
+        if (isLeftSwipe && !isModalOpen) {
+            navigate('/gifts');
         }
     };
 
@@ -208,7 +196,7 @@ function LandingPage() {
             </div>
 
             <div className="reveal">
-                <GiftSection onOpenDrawer={openGiftDrawer} />
+                <GiftSection />
             </div>
 
             <div className="reveal">
@@ -216,7 +204,6 @@ function LandingPage() {
             </div>
 
             <RSVPModal isOpen={isModalOpen} onClose={closeModal} />
-            <GiftDrawer isOpen={isGiftDrawerOpen} onClose={closeGiftDrawer} />
 
             <div className="floating-buttons-container">
                 {/* Audio Controls */}
@@ -239,7 +226,7 @@ function LandingPage() {
 
                 <button
                     className={`btn-gift-floating ${showFloatingBtn ? 'visible' : ''}`}
-                    onClick={openGiftDrawer}
+                    onClick={() => navigate('/gifts')}
                 >
                     Área de Presentes 🎁
                 </button>
