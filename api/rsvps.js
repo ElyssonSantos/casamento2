@@ -24,13 +24,16 @@ const upload = multer({ storage });
 const RSVP_KV_KEY = 'rsvps_list';
 
 const getRSVPs = async () => {
+    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+        console.error('ERRO: Vercel KV não configurado. Adicione a integração KV no painel da Vercel.');
+        throw new Error('Banco de dados não configurado. Por favor, ative o Vercel KV.');
+    }
     try {
         const data = await kv.get(RSVP_KV_KEY);
-        // KV returns null if empty
         return data || [];
     } catch (error) {
         console.error('Error reading from KV:', error);
-        return [];
+        throw error;
     }
 };
 
