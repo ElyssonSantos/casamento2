@@ -24,10 +24,12 @@ const upload = multer({ storage });
 
 const RSVP_KV_KEY = 'rsvps_list';
 
-// 🔍 CONFIGURAÇÃO FLEXÍVEL DE BANCO
+// 🔍 CONFIGURAÇÃO DE ALTA DISPONIBILIDADE (BLOCO DE NOTAS NA NUVEM)
 const kvRestUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const kvRestToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const redisTcpUrl = process.env.REDIS_URL || process.env.KV_URL;
+
+// Se não achar na Vercel, usa o link direto que você me mandou
+const redisTcpUrl = process.env.REDIS_URL || process.env.KV_URL || "redis://default:YYvDWVLDaVscfl7zcDcLMeN3zfQtOsHF@redis-17948.c245.us-east-1-3.ec2.cloud.redislabs.com:17948";
 
 let dbClient = null;
 let dbType = '';
@@ -35,17 +37,13 @@ let dbType = '';
 if (kvRestUrl && kvRestToken) {
     dbClient = createClient({ url: kvRestUrl, token: kvRestToken });
     dbType = 'kv';
-    console.log('Usando Vercel KV (REST)');
 } else if (redisTcpUrl) {
     dbClient = new Redis(redisTcpUrl);
     dbType = 'redis';
-    console.log('Usando Redis Tradicional (TCP)');
 }
 
 const getRSVPs = async () => {
-    if (!dbClient) {
-        throw new Error('Banco de dados não configurado. Por favor, conecte o Redis ou KV no painel da Vercel.');
-    }
+    // Agora o dbClient nunca será nulo pois temos o link fixo
     try {
         const data = await dbClient.get(RSVP_KV_KEY);
         if (!data) return [];
