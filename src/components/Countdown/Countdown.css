@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 
 .countdown-section {
-    background-color: #fcfaf2; /* Light cream background */
+    background-color: #fcfaf2;
     text-align: center;
-    border-top: 1px solid rgba(197, 160, 89, 0.2);
-    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+    padding: 60px 20px;
+    border-top: 1px solid rgba(197, 160, 89, 0.1);
 }
 
 .countdown-title {
     font-family: 'Special Elite', cursive;
     color: #4a4a4a;
-    font-size: 1.8rem;
-    margin-bottom: 3rem;
+    font-size: 1.6rem;
+    margin-bottom: 2.5rem;
     letter-spacing: 1px;
     text-transform: lowercase;
 }
@@ -19,7 +19,7 @@
 .countdown-wrapper {
     display: flex;
     justify-content: center;
-    gap: 25px;
+    gap: 15px;
     flex-wrap: wrap;
 }
 
@@ -27,20 +27,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .flip-card {
     position: relative;
-    width: 110px;
-    height: 90px;
-    background-color: #333;
-    border-radius: 6px;
+    width: 90px;
+    height: 100px; /* Aumentado para não cortar */
+    background-color: #2b2b2b;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     overflow: hidden;
-    animation: flip-card-anim 0.4s ease-in-out;
 }
 
 .flip-card-top,
@@ -50,23 +49,22 @@
     display: flex;
     justify-content: center;
     font-family: 'Special Elite', cursive;
-    font-size: 2.8rem;
-    color: #eee;
-    background-color: #2b2b2b;
+    font-size: 2.5rem; /* Ajustado para caber melhor */
+    color: #ffffff;
     position: relative;
-    overflow: hidden;
+    background-color: #333;
 }
 
 .flip-card-top {
     align-items: flex-end;
-    padding-bottom: 2px;
-    background-color: #333; /* Slightly darker top */
+    padding-bottom: 0px;
 }
 
 .flip-card-bottom {
     align-items: flex-start;
-    padding-top: 2px;
+    padding-top: 0px;
     background-color: #2b2b2b;
+    border-top: 1px solid rgba(0,0,0,0.5);
 }
 
 .flip-card-line {
@@ -74,8 +72,8 @@
     top: 50%;
     left: 0;
     width: 100%;
-    height: 2px;
-    background-color: rgba(0, 0, 0, 0.6);
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.8);
     z-index: 10;
     transform: translateY(-50%);
 }
@@ -83,22 +81,15 @@
 .flip-label {
     font-family: 'Bree Serif', serif;
     font-size: 0.85rem;
-    color: #777;
-    letter-spacing: 1px;
+    color: #888;
+    text-transform: lowercase;
 }
 
-/* Subtle flip animation on value change */
-@keyframes flip-card-anim {
-    0% { transform: scaleY(1); }
-    50% { transform: scaleY(0.9); opacity: 0.8; }
-    100% { transform: scaleY(1); }
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
+/* Responsivo Mobile */
+@media (max-width: 480px) {
     .flip-card {
-        width: 75px;
-        height: 65px;
+        width: 70px;
+        height: 80px;
     }
     
     .flip-card-top,
@@ -107,16 +98,10 @@
     }
     
     .countdown-title {
-        font-size: 1.4rem;
-        margin-bottom: 2rem;
-        padding: 0 10px;
+        font-size: 1.3rem;
     }
 
     .countdown-wrapper {
-        gap: 12px;
-    }
-
-    .flip-unit {
-        gap: 8px;
+        gap: 10px;
     }
 }
