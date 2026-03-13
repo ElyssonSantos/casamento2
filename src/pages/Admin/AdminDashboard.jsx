@@ -129,7 +129,7 @@ const AdminDashboard = () => {
                                             {item.donation ? (
                                                 <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                                     <span style={{color: 'green', fontWeight: 'bold'}}>R$ {item.donation.amount}</span>
-                                                    <button onClick={() => setSelectedImage(item.donation.receiptUrl.startsWith('data:image') ? item.donation.receiptUrl : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/rsvps', '') + item.donation.receiptUrl : `http://localhost:3001${item.donation.receiptUrl}`))} style={{fontSize: '0.8rem', color: '#5e7d63', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>Ver Comprovante</button>
+                                                    <button onClick={() => setSelectedImage(item.donation.receiptUrl.startsWith('data:image') || item.donation.receiptUrl.startsWith('http') ? item.donation.receiptUrl : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/rsvps', '') + item.donation.receiptUrl : item.donation.receiptUrl))} style={{fontSize: '0.8rem', color: '#5e7d63', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>Ver Comprovante</button>
                                                 </div>
                                             ) : (
                                                 <span style={{color: '#999'}}>Não registrada</span>
