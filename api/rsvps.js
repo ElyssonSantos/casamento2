@@ -44,7 +44,10 @@ if (kvRestUrl && kvRestToken) {
 }
 
 const getRSVPs = async () => {
-    // Agora o dbClient nunca será nulo pois temos o link fixo
+    if (!dbClient) {
+        // Esta mensagem tem a data para sabermos se o deploy atualizou
+        throw new Error('Banco de dados não configurado (Versão: 13/03 01:10). Verifique o REDIS_URL.');
+    }
     try {
         const data = await dbClient.get(RSVP_KV_KEY);
         if (!data) return [];
