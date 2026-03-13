@@ -9,6 +9,7 @@ import Social from '../components/Social/Social';
 import RSVPModal from '../components/RSVPModal/RSVPModal';
 import GiftDrawer from '../components/Gift/GiftDrawer';
 import GiftSection from '../components/Gift/GiftSection';
+import Countdown from '../components/Countdown/Countdown';
 
 import '../styles/global.css';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
@@ -138,6 +139,10 @@ function LandingPage() {
             />
 
             <Hero onRSVP={openModal} />
+
+            <div className="reveal">
+                <Countdown />
+            </div>
 
             <div className="reveal">
                 <History />
