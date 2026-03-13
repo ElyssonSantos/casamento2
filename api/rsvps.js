@@ -5,6 +5,7 @@ import Redis from 'ioredis';
 import multer from 'multer';
 
 const app = express();
+console.log('--- API VERSÃO FINAL (HIBRIDA) CARREGADA ---');
 
 app.use(cors());
 app.use(express.json());
