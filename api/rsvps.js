@@ -24,13 +24,15 @@ const upload = multer({ storage });
 const RSVP_KV_KEY = 'rsvps_list';
 
 // Tenta encontrar as variáveis mesmo se os nomes forem diferentes (Redis/Upstash/KV)
-const kvUrl = process.env.KV_REST_API_URL || process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
+const kvUrl = process.env.KV_REST_API_URL || process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_URL;
 const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
 const getRSVPs = async () => {
-    if (!kvUrl || !kvToken) {
-        console.error('ERRO: Variáveis de banco de dados não encontradas.');
-        throw new Error('Banco de dados não configurado no painel da Vercel. Verifique as Environment Variables.');
+    // Se tivermos a REDIS_URL mas não o Token, avisamos o log mas tentamos prosseguir
+    if (!kvUrl) {
+        console.error('ERRO: Nenhuma URL de banco de dados (KV_URL ou REDIS_URL) encontrada.');
+        console.log('Variáveis disponíveis:', Object.keys(process.env).filter(k => k.includes('REDIS') || k.includes('KV')));
+        throw new Error('Configuração de banco de dados incompleta no painel da Vercel.');
     }
     try {
         const data = await kv.get(RSVP_KV_KEY);
