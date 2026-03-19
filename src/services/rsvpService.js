@@ -90,8 +90,15 @@ export const registerDonation = async (formData) => {
     });
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Erro ao registrar doação");
+        let errorMsg = "Erro ao registrar doação";
+        try {
+            const error = await response.json();
+            errorMsg = error.error || errorMsg;
+        } catch (e) {
+            console.error("Erro ao fazer parse da resposta do servidor:", e);
+            errorMsg = `Erro ${response.status}: Servidor retornou uma resposta inválida.`;
+        }
+        throw new Error(errorMsg);
     }
 
     return response.json();
