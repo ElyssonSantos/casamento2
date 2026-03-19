@@ -30,6 +30,54 @@ function LandingPage() {
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
 
+    // DRAG STATES PARA AUDIO
+    const [audioPos, setAudioPos] = useState({ x: 0, y: 0 });
+    const isDraggingAudio = useRef(false);
+    const audioDragStart = useRef({ x: 0, y: 0 });
+
+    const handleAudioDragStart = (e) => {
+        isDraggingAudio.current = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        audioDragStart.current = {
+            startX: clientX - audioPos.x,
+            startY: clientY - audioPos.y
+        };
+    };
+
+    useEffect(() => {
+        const handleAudioDragMove = (e) => {
+            if (!isDraggingAudio.current) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            if (e.touches && e.cancelable) {
+                e.preventDefault(); 
+            }
+
+            setAudioPos({
+                x: clientX - audioDragStart.current.startX,
+                y: clientY - audioDragStart.current.startY
+            });
+        };
+
+        const handleAudioDragEnd = () => {
+            isDraggingAudio.current = false;
+        };
+
+        window.addEventListener('mousemove', handleAudioDragMove, { passive: false });
+        window.addEventListener('mouseup', handleAudioDragEnd);
+        window.addEventListener('touchmove', handleAudioDragMove, { passive: false });
+        window.addEventListener('touchend', handleAudioDragEnd);
+
+        return () => {
+            window.removeEventListener('mousemove', handleAudioDragMove);
+            window.removeEventListener('mouseup', handleAudioDragEnd);
+            window.removeEventListener('touchmove', handleAudioDragMove);
+            window.removeEventListener('touchend', handleAudioDragEnd);
+        };
+    }, []);
+
     // 🎵 REFERÊNCIA DO ÁUDIO
     const audioRef = useRef(null);
 
@@ -205,7 +253,12 @@ function LandingPage() {
 
             <div className="floating-buttons-container">
                 {/* Audio Controls */}
-                <div className={`audio-floating-controls ${showFloatingBtn ? 'visible' : ''}`}>
+                <div 
+                    className={`audio-floating-controls ${showFloatingBtn ? 'visible' : ''}`}
+                    style={{ transform: `translate(${audioPos.x}px, ${audioPos.y}px)`, cursor: 'grab' }}
+                    onMouseDown={handleAudioDragStart}
+                    onTouchStart={handleAudioDragStart}
+                >
                     <button className="audio-main-btn" onClick={togglePlay}>
                         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                     </button>
@@ -273,19 +326,20 @@ function LandingPage() {
                     align-items: center;
                     gap: 10px;
                     z-index: 100;
-                    transform: translateY(100px);
                     opacity: 0;
-                    transition: all 0.4s ease;
+                    pointer-events: none;
+                    transition: opacity 0.4s ease, background 0.3s ease;
                     background: rgba(255, 255, 255, 0.9);
                     padding: 8px 15px;
                     border-radius: 50px;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
                     backdrop-filter: blur(5px);
                     border: 1px solid rgba(197, 160, 89, 0.3);
+                    user-select: none;
                 }
                 .audio-floating-controls.visible {
-                    transform: translateY(0);
                     opacity: 1;
+                    pointer-events: auto;
                 }
                 .audio-main-btn {
                     background: var(--color-green);
@@ -346,9 +400,6 @@ function LandingPage() {
                     .audio-floating-controls {
                         left: 20px;
                         bottom: 90px;
-                    }
-                    .volume-sliders {
-                        display: none;
                     }
                 }
             `}</style>
