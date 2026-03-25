@@ -240,17 +240,12 @@ function LandingPage({ fontSize, isBold, updateAccessibility }) {
     }
 
     return (
-        <div
-            className="landing-page"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-        >
+        <div className="landing-page">
 
             {/* 🎵 PLAYER INVISÍVEL */}
             <audio
                 ref={audioRef}
-                src="https://res.cloudinary.com/dedtkwg0m/video/upload/v1771269005/WhatsApp_Audio_2026-01-09_at_16.12.21_d1l2mg_uuu7pi.mp3"
+                src="https://res.cloudinary.com/dedtkwg0m/video/upload/v1774464259/musica_casamento_iacfgp.mp3"
                 preload="auto"
             />
 
@@ -293,7 +288,12 @@ function LandingPage({ fontSize, isBold, updateAccessibility }) {
                     onClick={() => setShowAccessibility(!showAccessibility)}
                     title="Acessibilidade"
                 >
-                    <img src="https://img.icons8.com/ios-filled/50/ffffff/gloves.png" alt="Acessibilidade" style={{width: '24px', height: '24px'}} />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 11V6a2 2 0 0 0-4 0v4"/>
+                        <path d="M14 10V4a2 2 0 0 0-4 0v6"/>
+                        <path d="M10 10.5V3a2 2 0 0 0-4 0v9"/>
+                        <path d="m8 12-2.9-1.4A2 2 0 0 0 2.2 12A8 8 0 0 0 10 20h2a8 8 0 0 0 8-8v-3.5a2 2 0 1 0-4 0V11"/>
+                    </svg>
                 </button>
                 
                 {showAccessibility && (
@@ -326,7 +326,13 @@ function LandingPage({ fontSize, isBold, updateAccessibility }) {
             </div>
 
             {/* Gift Swipe Handle */}
-            <div className={`gift-swipe-handle ${showFloatingBtn ? 'visible' : ''}`}>
+            <div 
+                className={`gift-swipe-handle ${showFloatingBtn ? 'visible' : ''}`}
+                onClick={() => navigate('/gifts')}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+            >
                 <div className="handle-content">
                     <span className="handle-arrow">❮</span>
                     <span className="handle-text">PRESENTES</span>

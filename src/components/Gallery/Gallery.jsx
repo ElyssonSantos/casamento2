@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Gallery.css';
 
 import imgHands from '../../assets/1.jpg';
+import imgCasal from '../../assets/casal.jpg';
 import imgWalking from '../../assets/2.jpg';
 import imgSunset from '../../assets/3.jpg';
 import imgDecor from '../../assets/4.jpg';
@@ -9,6 +10,7 @@ import imgNew from '../../assets/5.jpg';
 
 const images = [
     { src: imgHands, alt: "Mãos e alianças" },
+    { src: imgCasal, alt: "O Casal" },
     { src: imgWalking, alt: "Caminhando juntos" },
     { src: imgSunset, alt: "Pôr do sol" },
     { src: imgDecor, alt: "Detalhes da decoração" },
