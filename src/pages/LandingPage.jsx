@@ -10,7 +10,7 @@ import RSVPModal from '../components/RSVPModal/RSVPModal';
 import GiftSection from '../components/Gift/GiftSection';
 import Countdown from '../components/Countdown/Countdown';
 
-import { Play, Pause, Volume2, VolumeX, Plus, Minus } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Plus, Minus, Music, X } from 'lucide-react';
 
 import '../styles/global.css';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
@@ -26,6 +26,7 @@ function LandingPage() {
     const [volume, setVolume] = useState(0.3);
     const [isMuted, setIsMuted] = useState(false);
     const [showVolumeControls, setShowVolumeControls] = useState(false);
+    const [isAudioExpanded, setIsAudioExpanded] = useState(false);
 
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
@@ -179,6 +180,10 @@ function LandingPage() {
     const minSwipeDistance = 50;
 
     const onTouchStart = (e) => {
+        if (e.target.closest('.gallery-scroll-container') || e.target.closest('.embla')) {
+            setTouchStart(null);
+            return;
+        }
         setTouchEnd(null);
         setTouchStart(e.targetTouches[0].clientX);
     };
@@ -254,25 +259,46 @@ function LandingPage() {
             <div className="floating-buttons-container">
                 {/* Audio Controls */}
                 <div 
-                    className={`audio-floating-controls ${showFloatingBtn ? 'visible' : ''}`}
-                    style={{ transform: `translate(${audioPos.x}px, ${audioPos.y}px)`, cursor: 'grab' }}
-                    onMouseDown={handleAudioDragStart}
-                    onTouchStart={handleAudioDragStart}
+                    className={`audio-floating-controls ${showFloatingBtn ? 'visible' : ''} ${isAudioExpanded ? 'expanded' : 'compact'}`}
+                    style={{ transform: `translate(${audioPos.x}px, ${audioPos.y}px)`, cursor: isAudioExpanded ? 'default' : 'grab' }}
+                    onMouseDown={!isAudioExpanded ? handleAudioDragStart : undefined}
+                    onTouchStart={!isAudioExpanded ? handleAudioDragStart : undefined}
                 >
-                    <button className="audio-main-btn" onClick={togglePlay}>
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                    </button>
-                    
-                    <div className="volume-group">
-                        <button className="audio-sub-btn" onClick={toggleMute}>
-                            {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                    {!isAudioExpanded ? (
+                        <button className="audio-main-btn compact-mode" onClick={() => setIsAudioExpanded(true)}>
+                            <Music size={20} />
+                            {isPlaying && <span className="playing-indicator" />}
                         </button>
-                        <div className="volume-sliders">
-                            <button className="vol-step" onClick={decreaseVolume}><Minus size={14} /></button>
-                            <span className="vol-pct">{Math.round(volume * 100)}%</span>
-                            <button className="vol-step" onClick={increaseVolume}><Plus size={14} /></button>
-                        </div>
-                    </div>
+                    ) : (
+                        <>
+                            <div 
+                                className="drag-handle" 
+                                onMouseDown={handleAudioDragStart}
+                                onTouchStart={handleAudioDragStart}
+                                style={{cursor: 'grab', padding: '0 5px', color: '#ccc', display: 'flex', alignItems: 'center'}}
+                            >
+                                <span style={{fontSize: '14px', lineHeight: 1}}>⋮⋮</span>
+                            </div>
+                            <button className="audio-main-btn" onClick={togglePlay}>
+                                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            </button>
+                            
+                            <div className="volume-group">
+                                <button className="audio-sub-btn" onClick={toggleMute}>
+                                    {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                                </button>
+                                <div className="volume-sliders">
+                                    <button className="vol-step" onClick={decreaseVolume}><Minus size={14} /></button>
+                                    <span className="vol-pct">{Math.round(volume * 100)}%</span>
+                                    <button className="vol-step" onClick={increaseVolume}><Plus size={14} /></button>
+                                </div>
+                            </div>
+                            
+                            <button className="audio-close-btn" onClick={() => setIsAudioExpanded(false)}>
+                                <X size={18} />
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 <button
@@ -328,7 +354,7 @@ function LandingPage() {
                     z-index: 100;
                     opacity: 0;
                     pointer-events: none;
-                    transition: opacity 0.4s ease, background 0.3s ease;
+                    transition: all 0.3s ease;
                     background: rgba(255, 255, 255, 0.9);
                     padding: 8px 15px;
                     border-radius: 50px;
@@ -337,11 +363,35 @@ function LandingPage() {
                     border: 1px solid rgba(197, 160, 89, 0.3);
                     user-select: none;
                 }
+                .audio-floating-controls.compact {
+                    padding: 0;
+                    border-radius: 50%;
+                    border: none;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                    gap: 0;
+                }
                 .audio-floating-controls.visible {
                     opacity: 1;
                     pointer-events: auto;
                 }
+                .audio-close-btn {
+                    background: none;
+                    color: #999;
+                    border: none;
+                    padding: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                .audio-close-btn:hover {
+                    background: rgba(0,0,0,0.05);
+                    color: #333;
+                }
                 .audio-main-btn {
+                    position: relative;
                     background: var(--color-green);
                     color: white;
                     width: 40px;
@@ -355,6 +405,16 @@ function LandingPage() {
                 .audio-main-btn:hover {
                     transform: scale(1.1);
                     filter: brightness(1.1);
+                }
+                .playing-indicator {
+                    position: absolute;
+                    bottom: 0px;
+                    right: 2px;
+                    width: 10px;
+                    height: 10px;
+                    background: #4caf50;
+                    border-radius: 50%;
+                    border: 2px solid white;
                 }
                 .volume-group {
                     display: flex;
