@@ -15,23 +15,22 @@ const History = () => {
                 <div className="timeline">
                     <div className="timeline-item left">
                         <div className="content reveal-on-scroll">
-                            <h3>O Primeiro Olhar 🥰</h3>
-                            <span className="date">2024</span>
-                            <p>Nos conhecemos na academia, ficamos conversando e depois disso ele começou a me levar em casa...</p>
+               
+                            <p>Gabriel e Larissa têm o prazer de convidar você para celebrar conosco nossa união, um momento em que a nossa família e amigos se unem para compartilhar da nossa alegria e amor.</p>
                         </div>
                     </div>
                     <div className="timeline-item right">
                         <div className="content reveal-on-scroll">
-                            <h3>O Pedido 💖</h3>
-                            <span className="date">14 Fev 2026</span>
-                            <p>Foi um dia mágico onde dissemos nosso primeiro sim...</p>
+                            
+                            <p>Em um momento especial, gostaríamos que pessoas especiais se fizessem presente, e não poderia ser de outra forma, pois vocês são muito importantes para nós e fazem parte da nossa história.</p>
                         </div>
                     </div>
                     <div className="timeline-item left">
                         <div className="content reveal-on-scroll">
-                            <h3>O Grande Dia 💍</h3>
-                            <span className="date">17 Out 2026</span>
-                            <p>Agora vamos selar nossa união diante de Deus e de vocês...</p>
+                           
+                            <p>Será um momento de amor e celebração! Contamos com a sua presença para tornar esse dia ainda mais importante. 
+Com amor e gratidão,
+Gabriel e Larissa!❤️</p>
                         </div>
                     </div>
                 </div>
