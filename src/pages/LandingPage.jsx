@@ -16,10 +16,13 @@ import '../styles/global.css';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-function LandingPage() {
+function LandingPage({ fontSize, isBold, updateAccessibility }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(() => {
+        // Only show loading screen once per session
+        return !sessionStorage.getItem('siteLoaded');
+    });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showFloatingBtn, setShowFloatingBtn] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -27,6 +30,18 @@ function LandingPage() {
     const [isMuted, setIsMuted] = useState(false);
     const [showVolumeControls, setShowVolumeControls] = useState(false);
     const [isAudioExpanded, setIsAudioExpanded] = useState(false);
+
+    // ACESSIBILIDADE UI
+    const [showAccessibility, setShowAccessibility] = useState(false);
+
+    const toggleBold = () => {
+        updateAccessibility(undefined, !isBold);
+    };
+
+    const changeFontSize = (delta) => {
+        const newSize = Math.max(80, Math.min(150, fontSize + delta));
+        updateAccessibility(newSize, undefined);
+    };
 
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
@@ -37,6 +52,9 @@ function LandingPage() {
     const audioDragStart = useRef({ x: 0, y: 0 });
 
     const handleAudioDragStart = (e) => {
+        // Prevent swipe behavior when interacting with audio control
+        e.stopPropagation();
+        
         isDraggingAudio.current = true;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -180,10 +198,21 @@ function LandingPage() {
     const minSwipeDistance = 50;
 
     const onTouchStart = (e) => {
-        if (e.target.closest('.gallery-scroll-container') || e.target.closest('.embla')) {
+        // If it starts on the right handle OR anywhere if we want to keep some swipe
+        // but the user asked to restrict it to specific buttons AND a right handle icon.
+        
+        const isRightHandle = e.target.closest('.gift-swipe-handle');
+        
+        if (e.target.closest('.gallery-scroll-container') || e.target.closest('.embla') || e.target.closest('.audio-floating-controls')) {
             setTouchStart(null);
             return;
         }
+
+        if (!isRightHandle) {
+            setTouchStart(null);
+            return;
+        }
+
         setTouchEnd(null);
         setTouchStart(e.targetTouches[0].clientX);
     };
@@ -204,7 +233,10 @@ function LandingPage() {
     };
 
     if (isLoading) {
-        return <LoadingScreen onComplete={() => setIsLoading(false)} />;
+        return <LoadingScreen onComplete={() => {
+            sessionStorage.setItem('siteLoaded', 'true');
+            setIsLoading(false);
+        }} />;
     }
 
     return (
@@ -254,6 +286,53 @@ function LandingPage() {
 
             <Social />
 
+            {/* Accessibility Button */}
+            <div className={`accessibility-control ${showFloatingBtn ? 'visible' : ''}`}>
+                <button 
+                    className="accessibility-toggle-btn" 
+                    onClick={() => setShowAccessibility(!showAccessibility)}
+                    title="Acessibilidade"
+                >
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/gloves.png" alt="Acessibilidade" style={{width: '24px', height: '24px'}} />
+                </button>
+                
+                {showAccessibility && (
+                    <div className="accessibility-menu">
+                        <div className="menu-header">
+                            <span>Acessibilidade</span>
+                            <button onClick={() => setShowAccessibility(false)}><X size={16} /></button>
+                        </div>
+                        <div className="menu-options">
+                            <div className="option-item">
+                                <span>Tamanho da Fonte</span>
+                                <div className="option-controls">
+                                    <button onClick={() => changeFontSize(-10)}><Minus size={14} /></button>
+                                    <span>{fontSize}%</span>
+                                    <button onClick={() => changeFontSize(10)}><Plus size={14} /></button>
+                                </div>
+                            </div>
+                            <div className="option-item">
+                                <span>Negrito</span>
+                                <button 
+                                    className={`toggle-btn ${isBold ? 'active' : ''}`}
+                                    onClick={toggleBold}
+                                >
+                                    {isBold ? 'Ligado' : 'Desligado'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Gift Swipe Handle */}
+            <div className={`gift-swipe-handle ${showFloatingBtn ? 'visible' : ''}`}>
+                <div className="handle-content">
+                    <span className="handle-arrow">❮</span>
+                    <span className="handle-text">PRESENTES</span>
+                </div>
+            </div>
+
             <RSVPModal isOpen={isModalOpen} onClose={closeModal} />
 
             <div className="floating-buttons-container">
@@ -294,7 +373,10 @@ function LandingPage() {
                                 </div>
                             </div>
                             
-                            <button className="audio-close-btn" onClick={() => setIsAudioExpanded(false)}>
+                            <button className="audio-close-btn" onClick={(e) => {
+                                e.stopPropagation();
+                                setIsAudioExpanded(false);
+                            }}>
                                 <X size={18} />
                             </button>
                         </>
@@ -458,8 +540,179 @@ function LandingPage() {
 
                 @media (max-width: 600px) {
                     .audio-floating-controls {
-                        left: 20px;
-                        bottom: 90px;
+                        left: 10px;
+                        bottom: 15px;
+                    }
+                    .audio-floating-controls.compact .audio-main-btn {
+                        width: 45px;
+                        height: 45px;
+                    }
+                    .audio-floating-controls.expanded {
+                        padding: 5px 10px;
+                        gap: 5px;
+                        max-width: calc(100vw - 20px);
+                    }
+                    .volume-group {
+                        padding-left: 5px;
+                        gap: 5px;
+                    }
+                    .vol-pct {
+                        min-width: 25px;
+                        font-size: 10px;
+                    }
+                }
+
+                /* Accessibility Styles */
+                .accessibility-bold * {
+                    font-weight: 700 !important;
+                }
+
+                .accessibility-control {
+                    position: fixed;
+                    left: 20px;
+                    top: 20px;
+                    z-index: 1000;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: all 0.4s ease;
+                }
+                .accessibility-control.visible {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+                .accessibility-toggle-btn {
+                    background-color: #333;
+                    border-radius: 50%;
+                    width: 45px;
+                    height: 45px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    transition: transform 0.3s ease;
+                }
+                .accessibility-toggle-btn:hover {
+                    transform: scale(1.1);
+                }
+                .accessibility-menu {
+                    position: absolute;
+                    top: 55px;
+                    left: 0;
+                    background: white;
+                    border-radius: 12px;
+                    width: 240px;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                    padding: 15px;
+                    border: 1px solid #eee;
+                    animation: slideDown 0.3s ease-out;
+                }
+                @keyframes slideDown {
+                    from { transform: translateY(-10px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                .menu-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 10px;
+                    font-weight: bold;
+                    color: #333;
+                }
+                .option-item {
+                    margin-bottom: 12px;
+                }
+                .option-item span {
+                    display: block;
+                    font-size: 14px;
+                    margin-bottom: 5px;
+                    color: #666;
+                }
+                .option-controls {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: #f5f5f5;
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                    justify-content: space-between;
+                }
+                .option-controls button {
+                    background: white;
+                    border-radius: 4px;
+                    padding: 4px;
+                    display: flex;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                .toggle-btn {
+                    width: 100%;
+                    padding: 8px;
+                    border-radius: 8px;
+                    background: #f5f5f5;
+                    font-size: 13px;
+                    transition: all 0.2s;
+                }
+                .toggle-btn.active {
+                    background: var(--color-green);
+                    color: white;
+                }
+
+                /* Gift Swipe Handle Styles */
+                .gift-swipe-handle {
+                    position: fixed;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%) translateX(70%);
+                    background-color: var(--color-gold);
+                    color: white;
+                    padding: 15px 10px;
+                    border-radius: 10px 0 0 10px;
+                    box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+                    z-index: 98;
+                    cursor: pointer;
+                    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    opacity: 0;
+                    pointer-events: none;
+                }
+                .gift-swipe-handle.visible {
+                    opacity: 1;
+                    pointer-events: auto;
+                    transform: translateY(-50%) translateX(60%);
+                }
+                .gift-swipe-handle:hover, .gift-swipe-handle:active {
+                    transform: translateY(-50%) translateX(0);
+                }
+                .handle-content {
+                    writing-mode: vertical-rl;
+                    text-orientation: mixed;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-weight: bold;
+                    font-size: 12px;
+                    letter-spacing: 2px;
+                }
+                .handle-arrow {
+                    writing-mode: horizontal-tb;
+                    font-size: 18px;
+                    animation: pulseLeft 2s infinite;
+                }
+                @keyframes pulseLeft {
+                    0%, 100% { transform: translateX(0); }
+                    50% { transform: translateX(-5px); }
+                }
+
+                @media (max-width: 600px) {
+                    .accessibility-control {
+                        top: 20px;
+                        left: 15px; scale: 0.9;
+                    }
+                    .gift-swipe-handle {
+                        padding: 12px 6px;
+                    }
+                    .handle-text {
+                        font-size: 10px;
                     }
                 }
             `}</style>
