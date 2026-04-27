@@ -116,6 +116,24 @@ app.post('/api/rsvps', async (req, res) => {
     }
 });
 
+app.delete('/api/rsvps/:cpf', async (req, res) => {
+    try {
+        const { cpf } = req.params;
+        const currentRSVPs = await getRSVPs();
+        const updatedRSVPs = currentRSVPs.filter(rsvp => rsvp.cpf !== cpf);
+        
+        if (currentRSVPs.length === updatedRSVPs.length) {
+            return res.status(404).json({ error: 'RSVP não encontrado' });
+        }
+
+        await saveRSVPsStore(updatedRSVPs);
+        res.json({ message: 'RSVP removido com sucesso' });
+    } catch (error) {
+        console.error('Erro ao deletar RSVP:', error);
+        res.status(500).json({ error: 'Erro ao deletar RSVP' });
+    }
+});
+
 app.delete('/api/rsvps', async (req, res) => {
     try {
         await saveRSVPsStore([]);

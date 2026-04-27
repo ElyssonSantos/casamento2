@@ -40,3 +40,9 @@
     font-size: 0.9rem;
     opacity: 0.5;
 }
+
+@media (max-width: 600px) {
+    .social {
+        padding-bottom: 200px;
+    }
+}

@@ -63,6 +63,17 @@ export const getRSVPs = async () => {
     return data.list;
 };
 
+export const deleteRSVPByCPF = async (cpf) => {
+    const response = await fetch(`${API_URL}/${cpf}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Erro ao excluir RSVP");
+    }
+    return response.json();
+};
+
 export const clearRSVPs = async () => {
     const response = await fetch(API_URL, {
         method: 'DELETE',

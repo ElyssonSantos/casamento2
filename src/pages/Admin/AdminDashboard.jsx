@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStats } from '../../services/rsvpService';
+import { getStats, deleteRSVPByCPF } from '../../services/rsvpService';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Download, LogOut, CheckCircle } from 'lucide-react';
+import { Download, LogOut, CheckCircle, Trash2 } from 'lucide-react';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -11,24 +11,36 @@ const AdminDashboard = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const navigate = useNavigate();
 
+    const fetchStats = async () => {
+        try {
+            const data = await getStats();
+            setStats(data);
+        } catch (error) {
+            console.error("Failed to fetch stats", error);
+        }
+    };
+
     useEffect(() => {
         const auth = localStorage.getItem('admin_auth');
         if (!auth) {
             navigate('/admin');
             return;
         }
-        
-        const fetchStats = async () => {
-            try {
-                const data = await getStats();
-                setStats(data);
-            } catch (error) {
-                console.error("Failed to fetch stats", error);
-            }
-        };
 
         fetchStats();
     }, [navigate]);
+
+    const handleDelete = async (cpf, name) => {
+        if (window.confirm(`Tem certeza que deseja excluir o RSVP de ${name}?`)) {
+            try {
+                await deleteRSVPByCPF(cpf);
+                alert("RSVP excluído com sucesso!");
+                fetchStats(); // Refresh data
+            } catch (error) {
+                alert("Erro ao excluir RSVP: " + error.message);
+            }
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('admin_auth');
@@ -116,6 +128,7 @@ const AdminDashboard = () => {
                                 <th>Telefone</th>
                                 <th>Doação Registrada</th>
                                 <th>Data</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,11 +149,30 @@ const AdminDashboard = () => {
                                             )}
                                         </td>
                                         <td>{new Date(item.date).toLocaleDateString()}</td>
+                                        <td>
+                                            <button 
+                                                onClick={() => handleDelete(item.cpf, item.name)} 
+                                                className="delete-btn"
+                                                title="Excluir RSVP"
+                                                style={{
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    color: '#e74c3c',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    width: '100%'
+                                                }}
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="no-data">Nenhuma confirmação ainda.</td>
+                                    <td colSpan="6" className="no-data">Nenhuma confirmação ainda.</td>
                                 </tr>
                             )}
                         </tbody>
