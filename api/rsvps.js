@@ -67,7 +67,7 @@ const saveRSVPsStore = async (rsvps) => {
     await dbClient.set(RSVP_KV_KEY, value);
 };
 
-app.get('/api/rsvps', async (req, res) => {
+app.get(['/api/rsvps', '/'], async (req, res) => {
     try {
         const rsvps = await getRSVPs();
         res.json({ total: rsvps.length, list: rsvps });
@@ -77,7 +77,7 @@ app.get('/api/rsvps', async (req, res) => {
     }
 });
 
-app.post('/api/rsvps', async (req, res) => {
+app.post(['/api/rsvps', '/'], async (req, res) => {
     try {
         const { name, cpf, phone } = req.body;
         
@@ -114,7 +114,7 @@ app.post('/api/rsvps', async (req, res) => {
     }
 });
 
-app.delete('/api/rsvps/:cpf', async (req, res) => {
+app.delete(['/api/rsvps/:cpf', '/:cpf'], async (req, res) => {
     try {
         const { cpf } = req.params;
         console.log(`Tentando excluir RSVP com CPF: ${cpf}`);
@@ -134,7 +134,7 @@ app.delete('/api/rsvps/:cpf', async (req, res) => {
     }
 });
 
-app.delete('/api/rsvps', async (req, res) => {
+app.delete(['/api/rsvps', '/'], async (req, res) => {
     try {
         await saveRSVPsStore([]);
         res.json({ message: 'Todos os RSVPs foram apagados' });
