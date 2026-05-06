@@ -9,7 +9,13 @@ import './Admin.css';
 const AdminDashboard = () => {
     const [stats, setStats] = useState({ total: 0, list: [] });
     const [selectedImage, setSelectedImage] = useState(null);
+    const [notification, setNotification] = useState(null);
     const navigate = useNavigate();
+
+    const showNotification = (message, type = 'success') => {
+        setNotification({ message, type });
+        setTimeout(() => setNotification(null), 3000);
+    };
 
     const fetchStats = async () => {
         try {
@@ -34,10 +40,10 @@ const AdminDashboard = () => {
         if (window.confirm(`Tem certeza que deseja excluir o RSVP de ${name}?`)) {
             try {
                 await deleteRSVPByCPF(cpf);
-                alert("RSVP excluído com sucesso!");
+                showNotification("RSVP excluído com sucesso!");
                 fetchStats(); // Refresh data
             } catch (error) {
-                alert("Erro ao excluir RSVP: " + error.message);
+                showNotification("Erro ao excluir RSVP: " + error.message, 'error');
             }
         }
     };
@@ -179,6 +185,11 @@ const AdminDashboard = () => {
                     </table>
                 </div>
             </div>
+        {notification && (
+            <div className={`toast-notification ${notification.type}`}>
+                {notification.message}
+            </div>
+        )}
         {selectedImage && (
             <div className="modal-overlay" onClick={() => setSelectedImage(null)} style={{zIndex: 9999}}>
                 <div className="modal-content" onClick={e => e.stopPropagation()} style={{padding: '30px 10px 10px', textAlign: 'center', position: 'relative', width: 'auto', maxWidth: '90%'}}>
