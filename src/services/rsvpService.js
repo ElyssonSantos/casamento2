@@ -64,14 +64,28 @@ export const getRSVPs = async () => {
 };
 
 export const deleteRSVPByCPF = async (cpf) => {
-    const response = await fetch(`${API_URL}/${cpf}`, {
+    const response = await fetch(`${API_URL}/${encodeURIComponent(cpf)}`, {
         method: 'DELETE',
     });
+    
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Erro ao excluir RSVP");
+        let errorMsg = "Erro ao excluir RSVP";
+        try {
+            const error = await response.json();
+            errorMsg = error.error || errorMsg;
+        } catch (e) {
+            console.error("Erro ao fazer parse do erro:", e);
+        }
+        throw new Error(errorMsg);
     }
-    return response.json();
+    
+    try {
+        const text = await response.text();
+        return text ? JSON.parse(text) : {};
+    } catch (e) {
+        console.error("Erro ao fazer parse da resposta de sucesso:", e);
+        return {};
+    }
 };
 
 export const clearRSVPs = async () => {
