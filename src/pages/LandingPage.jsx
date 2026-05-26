@@ -4,7 +4,6 @@ import History from '../components/History/History';
 import EventDetails from '../components/EventDetails/EventDetails';
 import ImportantInfo from '../components/ImportantInfo/ImportantInfo';
 import PhrasesCarousel from '../components/PhrasesCarousel/PhrasesCarousel';
-import Gallery from '../components/Gallery/Gallery';
 import Social from '../components/Social/Social';
 import RSVPModal from '../components/RSVPModal/RSVPModal';
 import GiftSection from '../components/Gift/GiftSection';
@@ -203,7 +202,7 @@ function LandingPage({ fontSize, isBold, updateAccessibility }) {
         
         const isRightHandle = e.target.closest('.gift-swipe-handle');
         
-        if (e.target.closest('.gallery-scroll-container') || e.target.closest('.embla') || e.target.closest('.audio-floating-controls')) {
+        if (e.target.closest('.embla') || e.target.closest('.audio-floating-controls')) {
             setTouchStart(null);
             return;
         }
@@ -269,10 +268,6 @@ function LandingPage({ fontSize, isBold, updateAccessibility }) {
 
             <div className="reveal">
                 <ImportantInfo />
-            </div>
-
-            <div className="reveal">
-                <Gallery />
             </div>
 
             <div className="reveal">

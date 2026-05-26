@@ -10,7 +10,7 @@ const History = () => {
     return (
         <section className="history section-padding" id="historia">
             <div className="container">
-                <h2 className="section-title text-center">Nossa História</h2>
+                <h2 className="section-title text-center">Nosso Casamento</h2>
 
                 <div className="timeline">
                     <div className="timeline-item left">

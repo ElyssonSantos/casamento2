@@ -1,6 +1,6 @@
 import React from 'react';
 import './ImportantInfo.css';
-import { Clock, Users, UserX } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 
 const ImportantInfo = () => {
     return (
@@ -19,19 +19,6 @@ const ImportantInfo = () => {
                         </div>
                         <p>
                             A cerimônia começará às 15 horas em ponto. Pedimos aos convidados que não se atrasem, para que todo o restante da programação não seja prejudicado. A sua presença é importante do início ao fim, não queremos que você perca nenhum detalhe desse momento tão especial para nós!
-                        </p>
-                    </div>
-
-                    {/* Card 2: Crianças */}
-                    <div className="info-card reveal-on-scroll">
-                        <div className="info-header">
-                            <div className="info-icon">
-                                <UserX size={20} color="#d4ac61" />
-                            </div>
-                            <h3>Sobre Crianças</h3>
-                        </div>
-                        <p>
-                            Não será permitida a entrada de crianças menor de 5 anos, por justamente ser um casamento e não algo mais infantil, como aniversário e outras festividades. Somente serão permitidas crianças que participarão da cerimônia ou familiares que vêm de longe.
                         </p>
                     </div>
 
