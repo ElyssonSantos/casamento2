@@ -18,7 +18,9 @@
     padding: 2.5rem;
     border-radius: 12px;
     width: 90%;
-    max-width: 450px;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
     position: relative;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.3s ease;
@@ -69,7 +71,8 @@
     font-size: 0.9rem;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
@@ -77,9 +80,11 @@
     font-size: 1rem;
     transition: border-color 0.3s;
     font-family: inherit;
+    background: white;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--color-gold);
     box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1);
@@ -146,6 +151,135 @@
     align-items: center;
     font-size: 2rem;
     margin: 0 auto 1.5rem;
+}
+
+/* ==================== */
+/* Family Members Section */
+/* ==================== */
+
+.family-section {
+    margin: 1.5rem 0 0.5rem;
+    padding: 1.2rem;
+    border: 1.5px dashed var(--color-gold, #c5a059);
+    border-radius: 10px;
+    background: linear-gradient(135deg, #fdf8f0 0%, #f9f4ea 100%);
+    animation: fadeIn 0.4s ease;
+}
+
+.family-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+
+.family-icon {
+    font-size: 1.5rem;
+}
+
+.family-section-header h3 {
+    font-size: 1.05rem;
+    color: var(--color-text, #2c3e50);
+    margin: 0;
+    font-weight: 700;
+}
+
+.family-subtitle {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0 0 1rem 0;
+}
+
+.family-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.family-member-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e8e0d4;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    animation: slideUp 0.3s ease;
+}
+
+.family-member-card:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    border-color: var(--color-gold, #c5a059);
+}
+
+.member-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    background: var(--color-gold, #c5a059);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.member-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.member-fields input,
+.member-fields select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    background: white;
+    box-sizing: border-box;
+}
+
+.member-fields input:focus,
+.member-fields select:focus {
+    outline: none;
+    border-color: var(--color-gold, #c5a059);
+    box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1);
+}
+
+.member-fields select.placeholder-select {
+    color: #999;
+}
+
+.total-people-badge {
+    text-align: center;
+    padding: 8px 16px;
+    background: var(--color-green, #5e7d63);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0;
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.total-people-badge strong {
+    margin-left: 4px;
 }
 
 @keyframes fadeIn {

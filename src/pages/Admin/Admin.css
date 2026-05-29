@@ -94,6 +94,7 @@
     padding: 40px;
     max-width: 1200px;
     margin: 0 auto;
+    flex-wrap: wrap;
 }
 
 .card {
@@ -105,6 +106,7 @@
     align-items: center;
     gap: 20px;
     flex: 1;
+    min-width: 200px;
 }
 
 .card-icon {
@@ -169,6 +171,135 @@ th {
     text-align: center;
     padding: 40px;
     color: #888;
+}
+
+/* People column */
+.people-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.people-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    background: var(--color-green, #5e7d63);
+    color: white;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0 8px;
+}
+
+.expand-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.expand-btn:hover {
+    background: var(--color-gold, #c5a059);
+    color: white;
+    border-color: var(--color-gold, #c5a059);
+}
+
+tr.row-expanded > td {
+    border-bottom: none;
+    background: #fafaf5;
+}
+
+/* Family detail expanded row */
+.family-detail-row > td {
+    padding: 0 20px 20px 20px;
+    background: #fafaf5;
+    border-bottom: 2px solid var(--color-gold, #c5a059);
+}
+
+.family-detail-container {
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e8e0d4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.family-detail-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--color-green, #5e7d63);
+    margin: 0 0 12px 0;
+    font-weight: 700;
+}
+
+.family-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.family-detail-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #fdf8f0 0%, #f9f4ea 100%);
+    border-radius: 8px;
+    border: 1px solid #e8e0d4;
+    transition: border-color 0.2s ease;
+}
+
+.family-detail-card:hover {
+    border-color: var(--color-gold, #c5a059);
+}
+
+.family-detail-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    background: var(--color-gold, #c5a059);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.family-detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.family-detail-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text, #2c3e50);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.family-detail-rel {
+    font-size: 0.78rem;
+    color: #888;
+    font-style: italic;
 }
 
 /* Toast Notification */

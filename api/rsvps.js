@@ -79,7 +79,7 @@ app.get(['/api/rsvps', '/'], async (req, res) => {
 
 app.post(['/api/rsvps', '/'], async (req, res) => {
     try {
-        const { name, cpf, phone } = req.body;
+        const { name, cpf, phone, familyMembers, totalPeople } = req.body;
         
         if (!name || !cpf || !phone) {
             return res.status(400).json({ error: 'Nome, CPF e telefone são obrigatórios' });
@@ -100,6 +100,8 @@ app.post(['/api/rsvps', '/'], async (req, res) => {
             name,
             cpf,
             phone,
+            familyMembers: Array.isArray(familyMembers) ? familyMembers : [],
+            totalPeople: totalPeople || 1,
             id: Date.now(),
             date: new Date().toISOString()
         };

@@ -2,12 +2,33 @@ import React, { useState } from 'react';
 import { saveRSVP } from '../../services/rsvpService';
 import './RSVPModal.css';
 
+const RELATIONSHIP_OPTIONS = [
+    'Esposo(a)',
+    'Namorado(a)',
+    'Noivo(a)',
+    'Irmão/Irmã',
+    'Pai',
+    'Mãe',
+    'Padrasto',
+    'Madrasta',
+    'Filho(a)',
+    'Tio(a)',
+    'Primo(a)',
+    'Avô/Avó',
+    'Sogro(a)',
+    'Cunhado(a)',
+    'Amigo(a)',
+    'Outro',
+];
+
 const RSVPModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         name: '',
         cpf: '',
         phone: ''
     });
+    const [familyCount, setFamilyCount] = useState(0);
+    const [familyMembers, setFamilyMembers] = useState([]);
     const [status, setStatus] = useState('idle'); // idle, loading, success, error
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -18,21 +39,64 @@ const RSVPModal = ({ isOpen, onClose }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleFamilyCountChange = (e) => {
+        const count = Math.max(0, Math.min(20, parseInt(e.target.value) || 0));
+        setFamilyCount(count);
+
+        setFamilyMembers(prev => {
+            const updated = [...prev];
+            if (count > updated.length) {
+                for (let i = updated.length; i < count; i++) {
+                    updated.push({ name: '', relationship: '' });
+                }
+            } else {
+                updated.length = count;
+            }
+            return updated;
+        });
+    };
+
+    const handleFamilyMemberChange = (index, field, value) => {
+        setFamilyMembers(prev => {
+            const updated = [...prev];
+            updated[index] = { ...updated[index], [field]: value };
+            return updated;
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.name || !formData.phone || !formData.cpf) return;
 
+        // Validate family members if any
+        if (familyCount > 0) {
+            const incomplete = familyMembers.some(m => !m.name || !m.relationship);
+            if (incomplete) {
+                setStatus('error');
+                setErrorMessage('Preencha o nome e o parentesco de todos os familiares.');
+                return;
+            }
+        }
+
         setStatus('loading');
         setErrorMessage('');
 
+        const payload = {
+            ...formData,
+            familyMembers: familyCount > 0 ? familyMembers : [],
+            totalPeople: 1 + familyCount,
+        };
+
         // Save to API
         try {
-            await saveRSVP(formData);
+            await saveRSVP(payload);
             setStatus('success');
             setTimeout(() => {
                 onClose();
                 setStatus('idle');
                 setFormData({ name: '', cpf: '', phone: '' });
+                setFamilyCount(0);
+                setFamilyMembers([]);
             }, 2000);
         } catch (error) {
             setStatus('error');
@@ -91,6 +155,63 @@ const RSVPModal = ({ isOpen, onClose }) => {
                                     placeholder="(00) 00000-0000"
                                     required
                                 />
+                            </div>
+
+                            {/* Family Members Section */}
+                            <div className="family-section">
+                                <div className="family-section-header">
+                                    <span className="family-icon">👨‍👩‍👧‍👦</span>
+                                    <h3>Acompanhantes / Família</h3>
+                                </div>
+                                <p className="family-subtitle">Quantas pessoas da sua família irão com você?</p>
+
+                                <div className="form-group">
+                                    <label>Quantidade de acompanhantes</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="20"
+                                        value={familyCount}
+                                        onChange={handleFamilyCountChange}
+                                        placeholder="0"
+                                    />
+                                </div>
+
+                                {familyCount > 0 && (
+                                    <div className="family-members-list">
+                                        {familyMembers.map((member, index) => (
+                                            <div className="family-member-card" key={index}>
+                                                <span className="member-number">{index + 1}</span>
+                                                <div className="member-fields">
+                                                    <input
+                                                        type="text"
+                                                        placeholder={`Nome do acompanhante ${index + 1}`}
+                                                        value={member.name}
+                                                        onChange={(e) => handleFamilyMemberChange(index, 'name', e.target.value)}
+                                                        required
+                                                    />
+                                                    <select
+                                                        value={member.relationship}
+                                                        onChange={(e) => handleFamilyMemberChange(index, 'relationship', e.target.value)}
+                                                        required
+                                                        className={member.relationship ? '' : 'placeholder-select'}
+                                                    >
+                                                        <option value="" disabled>Parentesco...</option>
+                                                        {RELATIONSHIP_OPTIONS.map(opt => (
+                                                            <option key={opt} value={opt}>{opt}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {familyCount > 0 && (
+                                    <p className="total-people-badge">
+                                        Total de pessoas: <strong>{1 + familyCount}</strong>
+                                    </p>
+                                )}
                             </div>
 
                             {status === 'error' && <p className="error-message">{errorMessage}</p>}
