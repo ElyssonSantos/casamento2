@@ -8,15 +8,21 @@
     "start:backend": "node server.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:security": "node security.test.js",
+    "generate:admin-hash": "node generate-admin-hash.js"
   },
   "dependencies": {
     "@vercel/kv": "^3.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
     "form-data": "^4.0.5",
+    "helmet": "^8.2.0",
     "ioredis": "^5.10.0",
+    "jsonwebtoken": "^9.0.3",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",

@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (SEGREDOS!)
+.env
+.env.*
+!.env.example
+
+# Dados sensíveis (PII — LGPD)
+data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

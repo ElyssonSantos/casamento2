@@ -334,7 +334,7 @@ function LandingPage({ fontSize, isBold, updateAccessibility }) {
                 </div>
             </div>
 
-            <RSVPModal isOpen={isModalOpen} onClose={closeModal} />
+            <RSVPModal isOpen={isModalOpen} onClose={closeModal} onSuccess={() => navigate('/gifts')} />
 
             <div className="floating-buttons-container">
                 {/* Audio Controls */}

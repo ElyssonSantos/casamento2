@@ -21,7 +21,7 @@ const RELATIONSHIP_OPTIONS = [
     'Outro',
 ];
 
-const RSVPModal = ({ isOpen, onClose }) => {
+const RSVPModal = ({ isOpen, onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
         name: '',
         cpf: '',
@@ -97,6 +97,7 @@ const RSVPModal = ({ isOpen, onClose }) => {
                 setFormData({ name: '', cpf: '', phone: '' });
                 setFamilyCount(0);
                 setFamilyMembers([]);
+                if (onSuccess) onSuccess();
             }, 2000);
         } catch (error) {
             setStatus('error');
@@ -129,6 +130,7 @@ const RSVPModal = ({ isOpen, onClose }) => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="Ex: João Silva"
+                                    maxLength={120}
                                     required
                                 />
                             </div>
@@ -141,6 +143,9 @@ const RSVPModal = ({ isOpen, onClose }) => {
                                     value={formData.cpf}
                                     onChange={handleChange}
                                     placeholder="000.000.000-00"
+                                    maxLength={14}
+                                    pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}"
+                                    title="CPF no formato 000.000.000-00"
                                     required
                                 />
                             </div>
@@ -153,6 +158,7 @@ const RSVPModal = ({ isOpen, onClose }) => {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     placeholder="(00) 00000-0000"
+                                    maxLength={20}
                                     required
                                 />
                             </div>
@@ -188,6 +194,7 @@ const RSVPModal = ({ isOpen, onClose }) => {
                                                         placeholder={`Nome do acompanhante ${index + 1}`}
                                                         value={member.name}
                                                         onChange={(e) => handleFamilyMemberChange(index, 'name', e.target.value)}
+                                                        maxLength={120}
                                                         required
                                                     />
                                                     <select

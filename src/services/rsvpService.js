@@ -1,6 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL || '/api/rsvps';
 const RSVP_KEY = 'casamento_rsvps';
 
+// ===================================================================
+// SEGURANÇA: Helper para requisições admin autenticadas
+// ===================================================================
+const getAdminHeaders = () => {
+    const token = sessionStorage.getItem('admin_token');
+    if (!token) return {};
+    return { 'Authorization': `Bearer ${token}` };
+};
+
 const migrateLocalData = async () => {
     try {
         const localData = localStorage.getItem(RSVP_KEY);
@@ -10,16 +19,17 @@ const migrateLocalData = async () => {
                 let allSuccess = true;
                 for (const item of parsedData) {
                     try {
-                        const duplicateCheck = await fetch(API_URL);
-                        const duplicateData = await duplicateCheck.json();
-                        const exists = duplicateData.list.some(rsvp => rsvp.cpf === item.cpf || rsvp.phone === item.phone);
-                        if (!exists) {
-                            const postReq = await fetch(API_URL, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(item),
-                            });
-                            if (!postReq.ok) allSuccess = false;
+                        // Migração não precisa de autenticação, só POST
+                        const postReq = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(item),
+                        });
+                        if (!postReq.ok) {
+                            const errData = await postReq.json().catch(() => ({}));
+                            // Se já existe, considere como sucesso (já migrado)
+                            if (errData.error && errData.error.includes('já registrado')) continue;
+                            allSuccess = false;
                         }
                     } catch (e) {
                         console.error('Erro ao migrar item:', e);
@@ -53,9 +63,12 @@ export const saveRSVP = async (data) => {
     return response.json();
 };
 
+// SEGURANÇA: getRSVPs agora requer token admin
 export const getRSVPs = async () => {
     await migrateLocalData();
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, {
+        headers: { ...getAdminHeaders() },
+    });
     if (!response.ok) {
         throw new Error("Erro ao buscar RSVPs");
     }
@@ -63,9 +76,11 @@ export const getRSVPs = async () => {
     return data.list;
 };
 
+// SEGURANÇA: deleteRSVPByCPF agora requer token admin
 export const deleteRSVPByCPF = async (cpf) => {
     const response = await fetch(`${API_URL}/${encodeURIComponent(cpf)}`, {
         method: 'DELETE',
+        headers: { ...getAdminHeaders() },
     });
     
     if (!response.ok) {
@@ -88,18 +103,22 @@ export const deleteRSVPByCPF = async (cpf) => {
     }
 };
 
+// SEGURANÇA: clearRSVPs agora requer token admin
 export const clearRSVPs = async () => {
     const response = await fetch(API_URL, {
         method: 'DELETE',
+        headers: { ...getAdminHeaders() },
     });
     if (!response.ok) {
         throw new Error("Erro ao apagar RSVPs");
     }
 };
 
+// SEGURANÇA: getStats agora requer token admin
 export const getStats = async () => {
-    await migrateLocalData();
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, {
+        headers: { ...getAdminHeaders() },
+    });
     if (!response.ok) {
         throw new Error("Erro ao buscar estatísticas");
     }

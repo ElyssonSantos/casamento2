@@ -1,16 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStats, deleteRSVPByCPF } from '../../services/rsvpService';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Download, LogOut, CheckCircle, Trash2, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import './Admin.css';
+
+// ===================================================================
+// SEGURANÇA: Helper para requisições autenticadas
+// ===================================================================
+const getAdminToken = () => sessionStorage.getItem('admin_token');
+
+const adminFetch = async (url, options = {}) => {
+    const token = getAdminToken();
+    if (!token) throw new Error('NO_TOKEN');
+
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (response.status === 401 || response.status === 403) {
+        sessionStorage.removeItem('admin_token');
+        throw new Error('UNAUTHORIZED');
+    }
+
+    return response;
+};
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({ total: 0, list: [] });
     const [selectedImage, setSelectedImage] = useState(null);
     const [notification, setNotification] = useState(null);
     const [expandedRows, setExpandedRows] = useState({});
+    const [authChecked, setAuthChecked] = useState(false);
     const navigate = useNavigate();
 
     const showNotification = (message, type = 'success') => {
@@ -18,32 +44,74 @@ const AdminDashboard = () => {
         setTimeout(() => setNotification(null), 3000);
     };
 
-    const fetchStats = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || '/api/rsvps';
+
+    const fetchStats = useCallback(async () => {
         try {
-            const data = await getStats();
+            const response = await adminFetch(API_URL);
+            if (!response.ok) throw new Error('Erro ao buscar dados');
+            const data = await response.json();
             setStats(data);
         } catch (error) {
+            if (error.message === 'NO_TOKEN' || error.message === 'UNAUTHORIZED') {
+                navigate('/admin');
+                return;
+            }
             console.error("Failed to fetch stats", error);
         }
-    };
+    }, [API_URL, navigate]);
 
+    // SEGURANÇA: Verificar token server-side ao carregar
     useEffect(() => {
-        const auth = localStorage.getItem('admin_auth');
-        if (!auth) {
-            navigate('/admin');
-            return;
-        }
+        const verifyAuth = async () => {
+            const token = getAdminToken();
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
 
-        fetchStats();
-    }, [navigate]);
+            try {
+                const baseUrl = API_URL.replace('/rsvps', '');
+                const response = await fetch(`${baseUrl}/admin/verify`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    sessionStorage.removeItem('admin_token');
+                    navigate('/admin');
+                    return;
+                }
+
+                setAuthChecked(true);
+                fetchStats();
+            } catch {
+                sessionStorage.removeItem('admin_token');
+                navigate('/admin');
+            }
+        };
+
+        verifyAuth();
+    }, [navigate, API_URL, fetchStats]);
 
     const handleDelete = async (cpf, name) => {
         if (window.confirm(`Tem certeza que deseja excluir o RSVP de ${name}?`)) {
             try {
-                await deleteRSVPByCPF(cpf);
+                const response = await adminFetch(`${API_URL}/${encodeURIComponent(cpf)}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Erro ao excluir');
+                }
+
                 showNotification("RSVP excluído com sucesso!");
-                fetchStats(); // Refresh data
+                fetchStats();
             } catch (error) {
+                if (error.message === 'UNAUTHORIZED') {
+                    navigate('/admin');
+                    return;
+                }
                 showNotification("Erro ao excluir RSVP: " + error.message, 'error');
             }
         }
@@ -54,7 +122,7 @@ const AdminDashboard = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('admin_auth');
+        sessionStorage.removeItem('admin_token');
         navigate('/admin');
     };
 
@@ -147,6 +215,15 @@ const AdminDashboard = () => {
             alert("Erro ao exportar PDF: " + error.message);
         }
     };
+
+    // Não renderizar até confirmar auth server-side
+    if (!authChecked) {
+        return (
+            <div className="admin-dashboard" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <p>Verificando autenticação...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="admin-dashboard">

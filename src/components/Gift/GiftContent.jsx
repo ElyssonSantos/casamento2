@@ -12,17 +12,25 @@ const GiftContent = () => {
         receipt: null
     });
 
-    // 🔗 Links de pagamento
+    // 🔗 Chaves PIX Copia e Cola
     const pixLinks = {
-        70: "https://nubank.com.br/cobrar/3wb9a1/69abf074-f345-4322-b754-77228788a34e",
-        100: "https://nubank.com.br/cobrar/3wb9a1/69abf0a6-4918-45e0-aec7-b71737e0140d",
-        150: "https://nubank.com.br/cobrar/3wb9a1/69abf0b8-9a1a-4f91-bd90-fa75c8ef40b8"
+        100: "00020101021126460014br.gov.bcb.pix0124larysantos0714@gmail.com5204000053039865406100.005802BR5913ANA L N NUNES6007ARACAJU62070503***630476E2",
+        150: "00020101021126460014br.gov.bcb.pix0124larysantos0714@gmail.com5204000053039865406150.005802BR5913ANA L N NUNES6007ARACAJU62070503***6304BB5B",
+        200: "00020101021126460014br.gov.bcb.pix0124larysantos0714@gmail.com5204000053039865406200.005802BR5913ANA L N NUNES6007ARACAJU62070503***630419BD"
     };
 
     const handlePixClick = (amount) => {
-        const link = pixLinks[amount];
-        if (link) window.open(link, "_blank");
-        else alert("Link de pagamento não encontrado.");
+        const pixString = pixLinks[amount];
+        if (pixString) {
+            navigator.clipboard.writeText(pixString)
+                .then(() => alert(`Chave PIX Copia e Cola de R$ ${amount} copiada para a área de transferência! Abra o app do seu banco e cole.`))
+                .catch(err => {
+                    console.error('Falha ao copiar PIX: ', err);
+                    alert("A chave PIX é: " + pixString);
+                });
+        } else {
+            alert("Chave PIX não encontrada.");
+        }
     };
 
     const handleCustomValueClick = () => {
@@ -129,6 +137,9 @@ const GiftContent = () => {
                                         value={formData.cpf} 
                                         onChange={handleInputChange} 
                                         placeholder="000.000.000-00" 
+                                        maxLength={14}
+                                        pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}"
+                                        title="CPF no formato 000.000.000-00"
                                         required 
                                     />
                                 </div>
@@ -140,6 +151,8 @@ const GiftContent = () => {
                                         value={formData.amount} 
                                         onChange={handleInputChange} 
                                         placeholder="Ex: 150" 
+                                        min="1"
+                                        max="100000"
                                         required 
                                     />
                                 </div>
@@ -181,16 +194,16 @@ const GiftContent = () => {
                     </p>
 
                     <div className="gift-options">
-                        <button className="gift-btn" onClick={() => handlePixClick(70)}>
-                            <Gift size={18} /> Presentear com R$ 70
-                        </button>
-
                         <button className="gift-btn" onClick={() => handlePixClick(100)}>
                             <Gift size={18} /> Presentear com R$ 100
                         </button>
 
                         <button className="gift-btn" onClick={() => handlePixClick(150)}>
                             <Gift size={18} /> Presentear com R$ 150
+                        </button>
+
+                        <button className="gift-btn" onClick={() => handlePixClick(200)}>
+                            <Gift size={18} /> Presentear com R$ 200
                         </button>
                     </div>
 
@@ -200,7 +213,7 @@ const GiftContent = () => {
                         </button>
 
                         <p className="min-value-text">
-                            Valor mínimo (70 reais)
+                            Valor mínimo (100 reais)
                         </p>
                         
                         <button className="register-donation-btn" onClick={() => setShowDonationForm(true)}>
