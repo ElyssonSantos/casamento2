@@ -79,8 +79,9 @@ const validateBase64Image = (base64String) => {
 // ===================================================================
 // SEGURANÇA: JWT + bcrypt para admin auth
 // ===================================================================
-const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'CHANGE_ME_IN_PRODUCTION';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || null;
+// 🔒 ADMIN AUTHENTICATION
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2b$12$0uCc9QgBfGthejNzFBiivePfodx/CAY0xg0v90nJoflGgZnda7m96';
+const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'casamento2-jwt-fallback-do-not-use-in-prod';
 
 const authenticateAdmin = (req, res, next) => {
     const authHeader = req.headers.authorization;

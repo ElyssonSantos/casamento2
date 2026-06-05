@@ -125,8 +125,8 @@ const upload = multer({
 // ===================================================================
 // SEGURANÇA: JWT Secret e Admin Password Hash
 // ===================================================================
-const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'CHANGE_ME_IN_PRODUCTION_' + Math.random();
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || null;
+const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'casamento2-jwt-fallback-do-not-use-in-prod';
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2b$12$0uCc9QgBfGthejNzFBiivePfodx/CAY0xg0v90nJoflGgZnda7m96';
 
 if (!process.env.ADMIN_JWT_SECRET) {
     console.warn('⚠️  ADMIN_JWT_SECRET não definido! Usando valor temporário inseguro. Defina no .env!');
