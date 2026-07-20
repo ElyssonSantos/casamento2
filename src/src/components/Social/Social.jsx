@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Social.css';
-import Watermark from '../Watermark';
+import Watermark from "../../Watermark";
 
 const Social = () => {
     return (
