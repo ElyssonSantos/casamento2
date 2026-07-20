@@ -22,7 +22,7 @@ const Watermark = ({ className = "" }) => {
       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
     >
       <img
-        src="/assets/watermark.png"
+        src="/assets/watermark2.png"
         alt="Site desenvolvido por Elysson Santos"
         style={{
           width: "170px",
