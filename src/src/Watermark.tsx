@@ -1,41 +1,15 @@
-import React from "react";
-import watermarkImg from "./assets/watermark2.png";
-
-interface WatermarkProps {
-  className?: string;
-}
-
-const Watermark: React.FC<WatermarkProps> = ({ className = "" }) => {
-  const whatsappText = encodeURIComponent(
-    "Olá! Vi o site do casamento e gostaria de solicitar um orçamento."
-  );
-
-  const whatsappUrl = `https://wa.me/5579998068464?text=${whatsappText}`;
-
+const Watermark = () => {
   return (
-    <a
-      href={whatsappUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      title="Solicitar um site"
-      className={className}
+    <div
       style={{
-        display: "inline-block",
-        transition: "transform .2s ease",
+        background: "red",
+        color: "white",
+        padding: "20px",
+        fontSize: "20px"
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
     >
-      <img
-        src={watermarkImg}
-        alt="Site desenvolvido por Elysson Santos"
-        style={{
-          width: "170px",
-          height: "auto",
-          objectFit: "contain",
-        }}
-      />
-    </a>
+      TESTE WATERMARK
+    </div>
   );
 };
 
