@@ -1,12 +1,10 @@
 import React from "react";
-import watermarkImg from "@/assets/watermark2.png";
 
-interface WatermarkProps {
-  className?: string;
-}
+const Watermark = ({ className = "" }) => {
+  const whatsappText = encodeURIComponent(
+    "Olá! Vi o site do casamento e gostaria de solicitar um orçamento."
+  );
 
-const Watermark: React.FC<WatermarkProps> = ({ className = "" }) => {
-  const whatsappText = encodeURIComponent("Olá! Vim do site Delícias da Milly! Quero um site pra mim!");
   const whatsappUrl = `https://wa.me/5579998068464?text=${whatsappText}`;
 
   return (
@@ -14,13 +12,23 @@ const Watermark: React.FC<WatermarkProps> = ({ className = "" }) => {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-block transition-transform hover:scale-105 ${className}`}
-      title="Criar site personalizado no WhatsApp"
+      title="Solicitar um site"
+      className={className}
+      style={{
+        display: "inline-block",
+        transition: "transform .2s ease"
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
     >
       <img
-        src={watermarkImg}
-        alt="Site desenvolvido por: ELYSSON Santos"
-        className="w-40 h-20 object-contain drop-shadow-sm rounded-lg"
+        src="/images/watermark.png"
+        alt="Site desenvolvido por Elysson Santos"
+        style={{
+          width: "170px",
+          height: "auto",
+          objectFit: "contain"
+        }}
       />
     </a>
   );
