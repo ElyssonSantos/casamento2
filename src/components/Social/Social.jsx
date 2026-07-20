@@ -7,8 +7,8 @@ const Social = () => {
     return (
         <footer className="social section-padding">
             <div className="container text-center">
-                <div className="watermark-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                    <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7, margin: 0 }}>
+                <div className="watermark-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                    <p style={{ fontSize: '18px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.85, margin: 0 }}>
                         INFORMAÇÕES LEGAIS
                     </p>
                     <a 
@@ -20,7 +20,7 @@ const Social = () => {
                         <img 
                             src={watermarkImg} 
                             alt="Elysson Santos" 
-                            style={{ maxHeight: '40px', objectFit: 'contain' }}
+                            style={{ maxHeight: '120px', maxWidth: '300px', width: 'auto', objectFit: 'contain' }}
                         />
                     </a>
                     <Link to="/admin" style={{ textDecoration: 'none', opacity: 0.2, marginTop: '5px' }}>🔒 Área Admin</Link>
